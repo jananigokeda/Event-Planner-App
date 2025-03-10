@@ -106,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           MaterialPageRoute(
                               builder: (context) => MyHomePage(
                                   title:
-                                  "Final Project Assignment - Customer List")),
+                                  "Final Project Assignment -Customer List")),
                         );
                       });
                     },
