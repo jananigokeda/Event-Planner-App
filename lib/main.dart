@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:cst2335_final/EventPlannerPage.dart';
-import 'package:cst2335_final/CustomerListPage.dart';
-import 'package:cst2335_final/ExpenseTrackerPage.dart';
+import 'package:cst2335_final/event_planner_page.dart';
+import 'package:cst2335_final/customer_list_page.dart';
+import 'package:cst2335_final/expense_tracker_page.dart';
 import 'package:cst2335_final/VehicleMaintenancePage.dart';
 
 void main() {
