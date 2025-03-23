@@ -1,0 +1,18 @@
+{
+  "language": {
+    "selection": {
+      "title": "Select Language",
+      "message": "Please select a language to use the app.",
+      "name": {
+        "en": "English",
+        "ta": "Tamil"
+      }
+    }
+  },
+  "expense": {
+    "instructions_title": "Instructions",
+    "instructions_content": "Follow the instructions to add an expense.",
+    "add_expense": "Add Expense",
+    "copy_last_entry": "Copy Last Entry"
+  }
+}

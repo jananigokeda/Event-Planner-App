@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'expense_item.dart';
 import 'expense_repository.dart';
+import 'package:intl/intl.dart';
 
 class ExpenseTrackerPage extends StatefulWidget {
   const ExpenseTrackerPage({super.key});
@@ -151,6 +152,28 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
     }
   }
 
+  Future<void> _selectDate() async {
+    DateTime initialDate = DateTime.now();
+    try {
+      if (_dateController.text.isNotEmpty) {
+        initialDate = DateFormat('yyyy-MM-dd').parse(_dateController.text);
+      }
+    } catch (_) {}
+
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+
+    if (picked != null) {
+      setState(() {
+        _dateController.text = DateFormat('yyyy-MM-dd').format(picked);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     bool isWideScreen = MediaQuery.of(context).size.width >= 600;
@@ -210,6 +233,8 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
             TextField(
               controller: _dateController,
               decoration: const InputDecoration(labelText: "Date"),
+              readOnly: true,
+              onTap: _selectDate,
             ),
             const SizedBox(height: 8),
             TextField(
