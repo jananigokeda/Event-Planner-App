@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'expense_item.dart';
 import 'expense_repository.dart';
-import 'package:intl/intl.dart';
 
 class ExpenseTrackerPage extends StatefulWidget {
   const ExpenseTrackerPage({super.key});
@@ -11,7 +11,10 @@ class ExpenseTrackerPage extends StatefulWidget {
 }
 
 class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
+  final EncryptedSharedPreferences _esp = EncryptedSharedPreferences();
   final ExpenseRepository _expenseRepository = ExpenseRepository();
+  final String _expenseCountKey = 'expense_count';
+
   List<ExpenseItem> _expenses = [];
   ExpenseItem? _selectedExpense;
   final TextEditingController _nameController = TextEditingController();
@@ -28,7 +31,24 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
   }
 
   Future<void> _loadExpenseList() async {
-    final expenses = await _expenseRepository.getAllExpenses();
+    String? countStr = await _esp.getString(_expenseCountKey);
+    int count = countStr != null && countStr.isNotEmpty ? int.tryParse(countStr) ?? 0 : 0;
+    List<ExpenseItem> expenses = [];
+
+    for (int i = 0; i < count; i++) {
+      String? idStr = await _esp.getString("expense_${i}_id");
+      String? name = await _esp.getString("expense_${i}_name");
+      String? category = await _esp.getString("expense_${i}_category");
+      String? amount = await _esp.getString("expense_${i}_amount");
+      String? date = await _esp.getString("expense_${i}_date");
+      String? paymentMethod = await _esp.getString("expense_${i}_paymentMethod");
+
+      if (idStr != null && name != null && category != null && amount != null && date != null && paymentMethod != null) {
+        int id = int.tryParse(idStr) ?? 0;
+        expenses.add(ExpenseItem(id, name, category, amount, date, paymentMethod));
+      }
+    }
+
     setState(() {
       _expenses = expenses;
       if (_expenses.isNotEmpty && _selectedExpense == null) {
@@ -38,7 +58,18 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
   }
 
   Future<void> _saveExpenseList() async {
-    await _expenseRepository.saveExpenseList(_expenses);
+    int count = _expenses.length;
+    await _esp.setString(_expenseCountKey, count.toString());
+
+    for (int i = 0; i < count; i++) {
+      ExpenseItem expense = _expenses[i];
+      await _esp.setString("expense_${i}_id", expense.id.toString());
+      await _esp.setString("expense_${i}_name", expense.name);
+      await _esp.setString("expense_${i}_category", expense.category);
+      await _esp.setString("expense_${i}_amount", expense.amount);
+      await _esp.setString("expense_${i}_date", expense.date);
+      await _esp.setString("expense_${i}_paymentMethod", expense.paymentMethod);
+    }
   }
 
   Future<void> _loadPreviousFormData() async {
@@ -152,28 +183,6 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
     }
   }
 
-  Future<void> _selectDate() async {
-    DateTime initialDate = DateTime.now();
-    try {
-      if (_dateController.text.isNotEmpty) {
-        initialDate = DateFormat('yyyy-MM-dd').parse(_dateController.text);
-      }
-    } catch (_) {}
-
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: initialDate,
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
-
-    if (picked != null) {
-      setState(() {
-        _dateController.text = DateFormat('yyyy-MM-dd').format(picked);
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     bool isWideScreen = MediaQuery.of(context).size.width >= 600;
@@ -233,8 +242,6 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
             TextField(
               controller: _dateController,
               decoration: const InputDecoration(labelText: "Date"),
-              readOnly: true,
-              onTap: _selectDate,
             ),
             const SizedBox(height: 8),
             TextField(
