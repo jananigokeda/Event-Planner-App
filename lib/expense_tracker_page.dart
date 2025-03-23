@@ -1,213 +1,375 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'expense_item.dart';
+import 'expense_repository.dart';
 
-class ExpenseDetailPage extends StatefulWidget {
-  final ExpenseItem expense;
-
-  const ExpenseDetailPage({Key? key, required this.expense}) : super(key: key);
+class ExpenseTrackerPage extends StatefulWidget {
+  const ExpenseTrackerPage({super.key});
 
   @override
-  _ExpenseDetailPageState createState() => _ExpenseDetailPageState();
+  State<ExpenseTrackerPage> createState() => _ExpenseTrackerPageState();
 }
 
-class _ExpenseDetailPageState extends State<ExpenseDetailPage> {
+class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
+  final EncryptedSharedPreferences _esp = EncryptedSharedPreferences();
+  final ExpenseRepository _expenseRepository = ExpenseRepository();
+  final String _expenseCountKey = 'expense_count';
+
+  List<ExpenseItem> _expenses = [];
+  ExpenseItem? _selectedExpense;
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _categoryController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
-  String _selectedPaymentMethod = 'Visa'; // Default payment method
-
-  final List<String> _paymentMethods = ['Visa', 'Mastercard', 'Debit', 'Cash', 'Other'];
+  final TextEditingController _paymentMethodController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _nameController.text = widget.expense.name;
-    _categoryController.text = widget.expense.category;
-    _amountController.text = widget.expense.amount;
-    _dateController.text = widget.expense.date;
-    _selectedPaymentMethod = widget.expense.paymentMethod;
+    _loadExpenseList();
+    _loadPreviousFormData();
   }
 
-  /// Opens a date picker for selecting the date.
-  Future<void> _selectDate() async {
-    DateTime initialDate = DateTime.now();
-    try {
-      if (_dateController.text.isNotEmpty) {
-        initialDate = DateFormat('yyyy-MM-dd').parse(_dateController.text);
+  Future<void> _loadExpenseList() async {
+    String? countStr = await _esp.getString(_expenseCountKey);
+    int count = countStr != null && countStr.isNotEmpty ? int.tryParse(countStr) ?? 0 : 0;
+    List<ExpenseItem> expenses = [];
+
+    for (int i = 0; i < count; i++) {
+      String? idStr = await _esp.getString("expense_${i}_id");
+      String? name = await _esp.getString("expense_${i}_name");
+      String? category = await _esp.getString("expense_${i}_category");
+      String? amount = await _esp.getString("expense_${i}_amount");
+      String? date = await _esp.getString("expense_${i}_date");
+      String? paymentMethod = await _esp.getString("expense_${i}_paymentMethod");
+
+      if (idStr != null && name != null && category != null && amount != null && date != null && paymentMethod != null) {
+        int id = int.tryParse(idStr) ?? 0;
+        expenses.add(ExpenseItem(id, name, category, amount, date, paymentMethod));
       }
-    } catch (_) {}
+    }
 
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: initialDate,
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
+    setState(() {
+      _expenses = expenses;
+      if (_expenses.isNotEmpty && _selectedExpense == null) {
+        _selectedExpense = _expenses[0];
+      }
+    });
+  }
 
-    if (picked != null) {
-      setState(() {
-        _dateController.text = DateFormat('yyyy-MM-dd').format(picked);
-      });
+  Future<void> _saveExpenseList() async {
+    int count = _expenses.length;
+    await _esp.setString(_expenseCountKey, count.toString());
+
+    for (int i = 0; i < count; i++) {
+      ExpenseItem expense = _expenses[i];
+      await _esp.setString("expense_${i}_id", expense.id.toString());
+      await _esp.setString("expense_${i}_name", expense.name);
+      await _esp.setString("expense_${i}_category", expense.category);
+      await _esp.setString("expense_${i}_amount", expense.amount);
+      await _esp.setString("expense_${i}_date", expense.date);
+      await _esp.setString("expense_${i}_paymentMethod", expense.paymentMethod);
     }
   }
 
-  /// Handles updating the expense.
-  void _handleUpdate() {
-    if (_nameController.text.isEmpty ||
-        _categoryController.text.isEmpty ||
-        _amountController.text.isEmpty ||
-        _dateController.text.isEmpty) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Error'),
-          content: const Text('All fields are required.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
-      return;
-    }
+  Future<void> _loadPreviousFormData() async {
+    final data = await _expenseRepository.loadData();
+    _nameController.text = data["name"] ?? '';
+    _categoryController.text = data["category"] ?? '';
+    _amountController.text = data["amount"] ?? '';
+    _dateController.text = data["date"] ?? '';
+    _paymentMethodController.text = data["paymentMethod"] ?? '';
+  }
 
-    final updatedExpense = ExpenseItem(
-      widget.expense.id,
+  Future<void> _saveFormData() async {
+    await _expenseRepository.saveData(
       _nameController.text,
       _categoryController.text,
       _amountController.text,
       _dateController.text,
-      _selectedPaymentMethod,
+      _paymentMethodController.text,
     );
-
-    Navigator.pop(context, updatedExpense);
   }
 
-  /// Handles deleting the expense.
-  void _handleDelete() {
+  Future<void> _handleSubmit() async {
+    if (_nameController.text.isEmpty ||
+        _categoryController.text.isEmpty ||
+        _amountController.text.isEmpty ||
+        _dateController.text.isEmpty ||
+        _paymentMethodController.text.isEmpty) {
+      _showErrorDialog('All fields are required.');
+      return;
+    }
+
+    bool duplicate = _expenses.any((expense) =>
+    expense.name == _nameController.text &&
+        expense.category == _categoryController.text &&
+        expense.amount == _amountController.text &&
+        expense.date == _dateController.text &&
+        expense.paymentMethod == _paymentMethodController.text);
+
+    if (duplicate) {
+      _showErrorDialog('An expense with the same details already exists.');
+      return;
+    }
+
+    await _saveFormData();
+
+    final newExpense = ExpenseItem(
+      DateTime.now().millisecondsSinceEpoch,
+      _nameController.text,
+      _categoryController.text,
+      _amountController.text,
+      _dateController.text,
+      _paymentMethodController.text,
+    );
+
+    setState(() {
+      _expenses.add(newExpense);
+      if (_selectedExpense == null) {
+        _selectedExpense = newExpense;
+      }
+    });
+
+    await _saveExpenseList();
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Expense added.')));
+
+    _nameController.clear();
+    _categoryController.clear();
+    _amountController.clear();
+    _dateController.clear();
+    _paymentMethodController.clear();
+  }
+
+  void _showErrorDialog(String message) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Expense'),
-        content: const Text('Are you sure you want to delete this expense?'),
+        title: const Text('Error'),
+        content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context, null); // Return null to indicate deletion
-            },
-            child: const Text('Delete'),
+            child: const Text('OK'),
           ),
         ],
       ),
     );
   }
 
+  Future<void> _navigateToExpenseDetail(ExpenseItem expense) async {
+    final updatedExpense = await Navigator.push<ExpenseItem>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ExpenseDetailPage(expense: expense),
+      ),
+    );
+
+    if (updatedExpense == null) {
+      setState(() {
+        _expenses.removeWhere((e) => e.id == expense.id);
+      });
+      await _saveExpenseList();
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Expense deleted.')));
+    } else {
+      setState(() {
+        int index = _expenses.indexWhere((e) => e.id == updatedExpense.id);
+        if (index != -1) {
+          _expenses[index] = updatedExpense;
+        }
+      });
+      await _saveExpenseList();
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Expense updated.')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.pop(context, widget.expense); // Return the original expense
-        return false;
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Expense Detail'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.info_outline),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text('Instructions'),
-                    content: const Text('Edit or delete the expense details.'),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('OK'),
-                      ),
-                    ],
-                  ),
-                );
-              },
+    bool isWideScreen = MediaQuery.of(context).size.width >= 600;
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Expense Tracker'),
+      ),
+      body: isWideScreen ? _buildWideLayout() : _buildMobileLayout(),
+    );
+  }
+
+  Widget _buildWideLayout() {
+    return Row(
+      children: [
+        Expanded(flex: 1, child: _buildInputForm()),
+        const VerticalDivider(width: 1),
+        Expanded(flex: 1, child: _buildListView()),
+      ],
+    );
+  }
+
+  Widget _buildMobileLayout() {
+    return Column(
+      children: [
+        _buildInputForm(),
+        const Divider(),
+        Expanded(child: _buildListView()),
+      ],
+    );
+  }
+
+  Widget _buildInputForm() {
+    return Card(
+      margin: const EdgeInsets.all(12),
+      elevation: 6,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            TextField(
+              controller: _nameController,
+              decoration: const InputDecoration(labelText: "Expense Name"),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _categoryController,
+              decoration: const InputDecoration(labelText: "Category"),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _amountController,
+              decoration: const InputDecoration(labelText: "Amount"),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _dateController,
+              decoration: const InputDecoration(labelText: "Date"),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _paymentMethodController,
+              decoration: const InputDecoration(labelText: "Payment Method"),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: _handleSubmit,
+                  icon: const Icon(Icons.check),
+                  label: const Text('Add Expense'),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    await _loadPreviousFormData();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Previous data loaded.')),
+                    );
+                  },
+                  icon: const Icon(Icons.copy),
+                  label: const Text('Copy Last Entry'),
+                ),
+              ],
             ),
           ],
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: ListView(
-            children: [
-              TextField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: "Expense Name"),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: _categoryController,
-                decoration: const InputDecoration(labelText: "Category"),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: _amountController,
-                decoration: const InputDecoration(labelText: "Amount"),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: _dateController,
-                decoration: const InputDecoration(labelText: "Date"),
-                readOnly: true,
-                onTap: _selectDate,
-              ),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                value: _selectedPaymentMethod,
-                items: _paymentMethods.map((method) {
-                  return DropdownMenuItem(
-                    value: method,
-                    child: Text(method),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedPaymentMethod = value!;
-                  });
-                },
-                decoration: const InputDecoration(labelText: "Payment Method"),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton.icon(
-                    onPressed: _handleUpdate,
-                    icon: const Icon(Icons.check),
-                    label: const Text('Update'),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    ),
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: _handleDelete,
-                    icon: const Icon(Icons.delete),
-                    label: const Text('Delete'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+      ),
+    );
+  }
+
+  Widget _buildListView() {
+    return _expenses.isEmpty
+        ? const Center(child: Text('No expenses recorded.'))
+        : ListView.builder(
+      itemCount: _expenses.length,
+      itemBuilder: (context, index) {
+        final expense = _expenses[index];
+        return Card(
+          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          elevation: 3,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          child: ListTile(
+            title: Text(expense.name),
+            subtitle: Text("Category: ${expense.category}"),
+            onTap: () => _navigateToExpenseDetail(expense),
           ),
+        );
+      },
+    );
+  }
+}
+
+class ExpenseDetailPage extends StatelessWidget {
+  final ExpenseItem expense;
+
+  const ExpenseDetailPage({Key? key, required this.expense}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final TextEditingController _nameController = TextEditingController(text: expense.name);
+    final TextEditingController _categoryController = TextEditingController(text: expense.category);
+    final TextEditingController _amountController = TextEditingController(text: expense.amount);
+    final TextEditingController _dateController = TextEditingController(text: expense.date);
+    final TextEditingController _paymentMethodController = TextEditingController(text: expense.paymentMethod);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Expense Detail'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          children: [
+            TextField(
+              controller: _nameController,
+              decoration: const InputDecoration(labelText: "Expense Name"),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _categoryController,
+              decoration: const InputDecoration(labelText: "Category"),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _amountController,
+              decoration: const InputDecoration(labelText: "Amount"),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _dateController,
+              decoration: const InputDecoration(labelText: "Date"),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _paymentMethodController,
+              decoration: const InputDecoration(labelText: "Payment Method"),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    final updatedExpense = ExpenseItem(
+                      expense.id,
+                      _nameController.text,
+                      _categoryController.text,
+                      _amountController.text,
+                      _dateController.text,
+                      _paymentMethodController.text,
+                    );
+                    Navigator.pop(context, updatedExpense);
+                  },
+                  child: const Text('Update'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context, null);
+                  },
+                  child: const Text('Delete'),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
