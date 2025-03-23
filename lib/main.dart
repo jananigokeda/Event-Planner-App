@@ -4,6 +4,7 @@ import 'package:cst2335_final/customer_list_page.dart';
 import 'package:cst2335_final/expense_tracker_page.dart';
 import 'package:cst2335_final/VehicleMaintenancePage.dart';
 
+
 void main() {
   runApp(const MyApp());
 }
@@ -31,6 +32,8 @@ class MyApp extends StatelessWidget {
           '/ExpenseTracker': (context) {
             return ExpenseTrackerPage();
           },
+          //'/ExpenseTracker: (context) => ExpenseTrackerPage(),
+
           '/VehicleMaintenance': (context) {
             return VehicleMaintenancePage();
           }
