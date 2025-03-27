@@ -1,21 +1,36 @@
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_translate/flutter_translate.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+//import 'package:flutter_localizations/flutter_localizations.dart';
+//import 'package:flutter_translate/flutter_translate.dart';
+import 'VehicleMaintenancePage.dart';
+import 'expense_tracker_page.dart';
+import 'customer_list_page.dart';
+import 'database.dart';
+import 'event_planner_page.dart';
 
-Future<void> main() async {
+
+
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+  runApp(MyApp(database:database));
+}
+/*Future<void> main() async {
   var delegate = await LocalizationDelegate.create(
       fallbackLocale: 'en',
       supportedLocales: ['en', 'ko']
   );
   runApp(LocalizedApp(delegate, const MyApp()));
-}
+}*/
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final AppDatabase database;
+  const MyApp({super.key , required this.database });
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    var localizationDelegate = LocalizedApp.of(context).delegate;
+    /*var localizationDelegate = LocalizedApp.of(context).delegate;
 
     return LocalizationProvider(
       state: LocalizationProvider.of(context).state,
@@ -31,7 +46,14 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
+        ),*/
+    return MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
         ),
+
         home: const MyHomePage(title: 'Final Project Assignment Home Page'),
         routes: {
           '/EventPlanner': (context) {
@@ -46,10 +68,10 @@ class MyApp extends StatelessWidget {
           //'/ExpenseTracker: (context) => ExpenseTrackerPage(),
 
           '/VehicleMaintenance': (context) {
-            return VehicleMaintenancePage();
+            return VehicleMaintenancePage(database:database);
           }
-        })
-    );
+        });
+
   }
 }
 
