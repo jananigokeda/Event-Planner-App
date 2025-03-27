@@ -1,15 +1,22 @@
-import 'package:flutter/material.dart';
-import 'package:cst2335_final/event_planner_page.dart';
-import 'package:cst2335_final/customer_list_page.dart';
-import 'package:cst2335_final/expense_tracker_page.dart';
-import 'package:cst2335_final/VehicleMaintenancePage.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+import 'VehicleMaintenancePage.dart';
+import 'customer_list_page.dart';
+import 'database.dart';
+import 'event_planner_page.dart';
+import 'expense_tracker_page.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+  runApp(MyApp(database: database));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final AppDatabase database;
+  const MyApp({super.key, required this.database});
 
   // This widget is the root of your application.
   @override
@@ -32,7 +39,7 @@ class MyApp extends StatelessWidget {
             return ExpenseTrackerPage();
           },
           '/VehicleMaintenance': (context) {
-            return VehicleMaintenancePage();
+            return VehicleMaintenancePage(database: database);
           }
         });
   }
