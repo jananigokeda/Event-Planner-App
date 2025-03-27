@@ -1,13 +1,44 @@
 {
-  "language": {
+  "language":
+  {
     "selection": {
       "title": "Select Language",
       "message": "Please select a language to use the app.",
-      "name": {
-        "en": "English",
-        "ta": "Tamil"
-      }
+    },
+    "name": {
+      "en": "English",
+      "ta": "Tamil",
+      "ko": "Korean"
     }
+  },
+  "button": {
+    "cancel": "Cancel"
+  },
+  "customer": {
+    "title": "Customer List",
+    "title_detail": "Customer Detail",
+    "instructions_title": "Instructions",
+    "instructions_content": "Enter all required fields to add a customer.\nTap \"Copy Previous\" to load the last input data.\nOn phone, tap a customer to view details on a new page.\nOn tablet/desktop, the right pane shows the detail view.",
+    "error_title": "Error",
+    "error_all_fields_required": "All fields are required.",
+    "duplicate_title": "Duplicate Entry",
+    "duplicate_content": "A customer with the same details already exists.",
+    "submit": "Submit",
+    "copy_previous": "Copy Previous",
+    "customer_added": "Customer added.",
+    "customer_deleted": "Customer deleted.",
+    "customer_updated": "Customer updated.",
+    "first_name": "First Name",
+    "last_name": "Last Name",
+    "address": "Address",
+    "birthday": "Birthday (YYYY-MM-DD)",
+    "no_customers": "No customers available.",
+    "select_customer": "Select a customer to view details.",
+    "edit": "Edit",
+    "delete": "Delete",
+    "customer": "Customer",
+    "delete_confirmation": "Are you sure you want to delete this customer?",
+    "close_detail": "Close Detail"
   },
   "expense": {
     "instructions_title": "Instructions",
