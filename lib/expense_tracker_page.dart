@@ -304,11 +304,16 @@ class ExpenseDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController _nameController = TextEditingController(text: expense.name);
-    final TextEditingController _categoryController = TextEditingController(text: expense.category);
-    final TextEditingController _amountController = TextEditingController(text: expense.amount);
-    final TextEditingController _dateController = TextEditingController(text: expense.date);
-    final TextEditingController _paymentMethodController = TextEditingController(text: expense.paymentMethod);
+    final TextEditingController _nameController = TextEditingController(
+        text: expense.name);
+    final TextEditingController _categoryController = TextEditingController(
+        text: expense.category);
+    final TextEditingController _amountController = TextEditingController(
+        text: expense.amount);
+    final TextEditingController _dateController = TextEditingController(
+        text: expense.date);
+    final TextEditingController _paymentMethodController = TextEditingController(
+        text: expense.paymentMethod);
 
     return Scaffold(
       appBar: AppBar(
