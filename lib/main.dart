@@ -1,14 +1,12 @@
-import 'package:flutter/material.dart';
-import 'package:cst2335_final/event_planner_page.dart';
-import 'package:cst2335_final/customer_list_page.dart';
-import 'package:cst2335_final/expense_tracker_page.dart';
-import 'package:cst2335_final/VehicleMaintenancePage.dart';
-import 'package:flutter_translate/flutter_translate.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 
-
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  var delegate = await LocalizationDelegate.create(
+      fallbackLocale: 'en',
+      supportedLocales: ['en', 'ko']
+  );
+  runApp(LocalizedApp(delegate, const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -17,8 +15,19 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    var localizationDelegate = LocalizedApp.of(context).delegate;
+
+    return LocalizationProvider(
+      state: LocalizationProvider.of(context).state,
+      child: MaterialApp(
         title: 'Flutter Demo',
+        localizationsDelegates: [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          localizationDelegate
+        ],
+        supportedLocales: localizationDelegate.supportedLocales,
+        locale: localizationDelegate.currentLocale,
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
@@ -39,7 +48,8 @@ class MyApp extends StatelessWidget {
           '/VehicleMaintenance': (context) {
             return VehicleMaintenancePage();
           }
-        });
+        })
+    );
   }
 }
 
