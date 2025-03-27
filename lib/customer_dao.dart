@@ -10,6 +10,9 @@ abstract class CustomerDAO {
   @insert
   Future<void> insertItem(CustomerItem itm);
 
+  @update
+  Future<void> updateItem(CustomerItem itm);
+
   @delete
   Future<void> deleteItem(CustomerItem itm);
 
