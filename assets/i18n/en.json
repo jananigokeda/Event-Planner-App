@@ -35,6 +35,8 @@
     "select_customer": "Select a customer to view details.",
     "edit": "Edit",
     "delete": "Delete",
+    "customer": "Customer",
+    "delete_confirmation": "Are you sure you want to delete this customer?",
     "close_detail": "Close Detail"
   }
 }
