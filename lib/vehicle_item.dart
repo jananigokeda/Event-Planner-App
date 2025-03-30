@@ -7,6 +7,12 @@ class VehicleItem {
 
   final String vehicleName;
   final String vehicleType;
+  final String serviceType;
+  final String serviceDate;
+  final String mileage;
+  final String cost;
 
-  const VehicleItem({this.vehicleId, required this.vehicleName, required this.vehicleType});
+
+  const VehicleItem({this.vehicleId, required this.vehicleName, required this.vehicleType, required this.serviceType
+  , required this.serviceDate, required this.mileage, required this.cost});
 }
