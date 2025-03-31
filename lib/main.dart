@@ -1,8 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:cst2335_final/event_planner_page.dart';
-import 'package:cst2335_final/customer_list_page.dart';
-import 'package:cst2335_final/expense_tracker_page.dart';
-import 'package:cst2335_final/VehicleMaintenancePage.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 
@@ -48,6 +43,8 @@ class MyApp extends StatelessWidget {
           '/ExpenseTracker': (context) {
             return ExpenseTrackerPage();
           },
+          //'/ExpenseTracker: (context) => ExpenseTrackerPage(),
+
           '/VehicleMaintenance': (context) {
             return VehicleMaintenancePage();
           }
