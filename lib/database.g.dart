@@ -72,7 +72,8 @@ class _$AppDatabase extends AppDatabase {
     changeListener = listener ?? StreamController<String>.broadcast();
   }
 
-  CustomerDAO? _customerDaoInstance;
+  CustomerDao? _customerDaoInstance;
+  VehicleDao? _VvehicleDAOInstance;
 
   Future<sqflite.Database> open(
     String path,
@@ -97,6 +98,8 @@ class _$AppDatabase extends AppDatabase {
       onCreate: (database, version) async {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `CustomerItem` (`id` INTEGER NOT NULL, `firstName` TEXT NOT NULL, `lastName` TEXT NOT NULL, `address` TEXT NOT NULL, `birthday` TEXT NOT NULL, PRIMARY KEY (`id`))');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `vehicle_item` (`vehicleId` INTEGER PRIMARY KEY AUTOINCREMENT, `vehicleName` TEXT NOT NULL, `vehicleType` TEXT NOT NULL, `serviceType` TEXT NOT NULL, `serviceDate` TEXT NOT NULL, `mileage` TEXT NOT NULL, `cost` TEXT NOT NULL)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -105,13 +108,21 @@ class _$AppDatabase extends AppDatabase {
   }
 
   @override
-  CustomerDAO get customerDao {
-    return _customerDaoInstance ??= _$CustomerDAO(database, changeListener);
+  CustomerDao get customerDao {
+    return _customerDaoInstance ??= _$CustomerDao(database, changeListener);
   }
+  @override
+  VehicleDao get vehicleDAO {
+    return _VvehicleDAOInstance ??= _$VehicleDao(database, changeListener);
+  }
+
+  @override
+  // TODO: implement expenseDao
+  ExpenseDao get expenseDao => throw UnimplementedError();
 }
 
-class _$CustomerDAO extends CustomerDAO {
-  _$CustomerDAO(
+class _$CustomerDao extends CustomerDao {
+  _$CustomerDao(
     this.database,
     this.changeListener,
   )   : _queryAdapter = QueryAdapter(database),
@@ -185,4 +196,89 @@ class _$CustomerDAO extends CustomerDAO {
   Future<void> updateItem(CustomerItem itm) async{
     await _customerItemUpdateAdapter.update(itm, OnConflictStrategy.abort);
   }
+}
+class _$VehicleDao extends VehicleDao {
+  _$VehicleDao(
+      this.database,
+      this.changeListener,
+      )   : _queryAdapter = QueryAdapter(database),
+        _vehicleItemInsertionAdapter = InsertionAdapter(
+            database,
+            'vehicle_item',
+                (VehicleItem item) => <String, Object?>{
+              'vehicleId': item.vehicleId,
+              'vehicleName': item.vehicleName,
+              'vehicleType': item.vehicleType,
+              'serviceType': item.serviceType,
+              'serviceDate': item.serviceDate,
+              'mileage': item.mileage,
+              'cost': item.cost
+            }),
+        _vehicleItemUpdateAdapter = UpdateAdapter(
+            database,
+            'vehicle_item',
+            ['vehicleId'],
+                (VehicleItem item) => <String, Object?>{
+              'vehicleId': item.vehicleId,
+              'vehicleName': item.vehicleName,
+              'vehicleType': item.vehicleType,
+              'serviceType': item.serviceType,
+              'serviceDate': item.serviceDate,
+              'mileage': item.mileage,
+              'cost': item.cost
+            }),
+        _vehicleItemDeletionAdapter = DeletionAdapter(
+            database,
+            'vehicle_item',
+            ['vehicleId'],
+                (VehicleItem item) => <String, Object?>{
+              'vehicleId': item.vehicleId,
+              'vehicleName': item.vehicleName,
+              'vehicleType': item.vehicleType,
+              'serviceType': item.serviceType,
+              'serviceDate': item.serviceDate,
+              'mileage': item.mileage,
+              'cost': item.cost
+            });
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<VehicleItem> _vehicleItemInsertionAdapter;
+
+  final UpdateAdapter<VehicleItem> _vehicleItemUpdateAdapter;
+
+  final DeletionAdapter<VehicleItem> _vehicleItemDeletionAdapter;
+
+  @override
+  Future<List<VehicleItem>> getAllItems() async {
+    return _queryAdapter.queryList('SELECT * FROM vehicle_item',
+        mapper: (Map<String, Object?> row) => VehicleItem(
+            vehicleId: row['vehicleId'] as int?,
+            vehicleName: row['vehicleName'] as String,
+            vehicleType: row['vehicleType'] as String,
+            serviceType: row['serviceType'] as String,
+            serviceDate: row['serviceDate'] as String,
+            mileage: row['mileage'] as String,
+            cost: row['cost'] as String));
+  }
+
+  @override
+  Future<void> insertItem(VehicleItem item) async {
+    await _vehicleItemInsertionAdapter.insert(item, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> updateItem(VehicleItem item) async {
+    await _vehicleItemUpdateAdapter.update(item, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> deleteItem(VehicleItem item) async {
+    await _vehicleItemDeletionAdapter.delete(item);
+  }
+
 }

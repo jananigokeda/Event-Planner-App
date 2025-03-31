@@ -20,7 +20,7 @@ class CustomerListPage extends StatefulWidget {
 class _CustomerListPageState extends State<CustomerListPage> {
   // Floor database instance and DAO.
   late AppDatabase _database;
-  late CustomerDAO _customerDao;
+  late CustomerDao _customerDao;
 
   // Repository for storing previous form data.
   final CustomerRepository _customerRepository = CustomerRepository();
