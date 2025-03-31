@@ -2,7 +2,7 @@ import 'package:floor/floor.dart';
 import 'customer_item.dart';
 
 @dao
-abstract class CustomerDAO {
+abstract class CustomerDao {
 
   @Query("Select * from CustomerItem")
   Future<List<CustomerItem>> getAllItem();

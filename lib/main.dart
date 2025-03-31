@@ -1,10 +1,16 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+
+import 'VehicleMaintenancePage.dart';
+import 'customer_list_page.dart';
+import 'event_planner_page.dart';
+import 'expense_tracker_page.dart';
 
 Future<void> main() async {
   var delegate = await LocalizationDelegate.create(
       fallbackLocale: 'en',
-      supportedLocales: ['en', 'ko']
+      supportedLocales: ['en', 'ta', 'ko']
   );
   runApp(LocalizedApp(delegate, const MyApp()));
 }
