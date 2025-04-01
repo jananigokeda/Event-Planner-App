@@ -420,75 +420,96 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
 
   Widget _detailsPage() {
     if (_selectedItem == null) {
-      return const Center(child: Text("There is no item selected for detail."));
+      return Center(
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey, width: 1.0),
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          padding: const EdgeInsets.all(16.0),
+          child: const Text("There is no item selected for detail."),
+        ),
+      );
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 20),
-        Text("Vehicle Id: ${_selectedItem!.vehicleId}",
-            style: const TextStyle(fontSize: 18)),
-        Text("Vehicle Name: ${_selectedItem!.vehicleName}",
-            style: const TextStyle(fontSize: 18)),
-        Text("Vehicle Type: ${_selectedItem!.vehicleType}",
-            style: const TextStyle(fontSize: 18)),
-        Text("Service Type: ${_selectedItem!.serviceType}",
-            style: const TextStyle(fontSize: 18)),
-        Text("Service Date: ${_selectedItem!.serviceDate}",
-            style: const TextStyle(fontSize: 18)),
-        Text("Mileage: ${_selectedItem!.mileage}",
-            style: const TextStyle(fontSize: 18)),
-        Text("Cost: ${_selectedItem!.cost}",
-            style: const TextStyle(fontSize: 18)),
-        const SizedBox(height: 73),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton.icon( // Delete button with Icon
-              onPressed: () {
-                _removeItem(_items.indexOf(_selectedItem!));
-                _closeDetails();
-              },
-              icon: const Icon(Icons.delete, color: Colors.white), // Icon
-              label: const Text("Delete", style: TextStyle(color: Colors.white)), // Text
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red), // Background color
-            ),
 
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey, width: 1.0),
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 20),
+          Text("Vehicle Id: ${_selectedItem!.vehicleId}",
+              style: const TextStyle(fontSize: 18)),
+          Text("Vehicle Name: ${_selectedItem!.vehicleName}",
+              style: const TextStyle(fontSize: 18)),
+          Text("Vehicle Type: ${_selectedItem!.vehicleType}",
+              style: const TextStyle(fontSize: 18)),
+          Text("Service Type: ${_selectedItem!.serviceType}",
+              style: const TextStyle(fontSize: 18)),
+          Text("Service Date: ${_selectedItem!.serviceDate}",
+              style: const TextStyle(fontSize: 18)),
+          Text("Mileage: ${_selectedItem!.mileage}",
+              style: const TextStyle(fontSize: 18)),
+          Text("Cost: ${_selectedItem!.cost}",
+              style: const TextStyle(fontSize: 18)),
+          const SizedBox(height: 73),
 
-            const SizedBox(width: 10), // Add space between buttons
-            ElevatedButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EditVehiclePage(
-                      item: _selectedItem!,
-                      dao: myDAO,
-                      onUpdate: (updatedItem) {
-                        setState(() {
-                          _selectedItem = updatedItem;
-                          _loadItems(); // Refresh the list
-                        });
-                      },
+          // Add the Row as another child of the Column
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton.icon(
+                onPressed: () {
+                  _removeItem(_items.indexOf(_selectedItem!));
+                  _closeDetails();
+                },
+                icon: const Icon(Icons.delete, color: Colors.white),
+                label: const Text(
+                    "Delete", style: TextStyle(color: Colors.white)),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              ),
+              const SizedBox(width: 10),
+              ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          EditVehiclePage(
+                            item: _selectedItem!,
+                            dao: myDAO,
+                            onUpdate: (updatedItem) {
+                              setState(() {
+                                _selectedItem = updatedItem;
+                                _loadItems();
+                              });
+                            },
+                          ),
                     ),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.edit, color: Colors.white),
-              label: const Text("Edit", style: TextStyle(color: Colors.white)),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-            ),
-            const SizedBox(width: 10), // Add space between buttons
-            ElevatedButton.icon( // Close button with Icon
-              onPressed: _closeDetails,
-              icon: const Icon(Icons.close, color: Colors.white),
-              label: const Text("Close", style: TextStyle(color: Colors.white)),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
-            ),
-          ],
-        ),
-      ],
+                  );
+                },
+                icon: const Icon(Icons.edit, color: Colors.white),
+                label: const Text(
+                    "Edit", style: TextStyle(color: Colors.white)),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+              ),
+              const SizedBox(width: 10),
+              ElevatedButton.icon(
+                onPressed: _closeDetails,
+                icon: const Icon(Icons.close, color: Colors.white),
+                label: const Text(
+                    "Close", style: TextStyle(color: Colors.white)),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
+              ),
+            ],
+          ),
+        ],
+      ), //
     );
   }
 
