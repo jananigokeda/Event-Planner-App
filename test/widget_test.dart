@@ -16,7 +16,7 @@ void main() {
     // Initialize the database before passing it to MyApp.
     final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
 
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(MyApp(database:database));
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);

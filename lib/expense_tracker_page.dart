@@ -3,6 +3,8 @@ import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'expense_item.dart';
 import 'expense_repository.dart';
 
+
+
 class ExpenseTrackerPage extends StatefulWidget {
   const ExpenseTrackerPage({super.key});
 
@@ -32,7 +34,8 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
 
   Future<void> _loadExpenseList() async {
     String? countStr = await _esp.getString(_expenseCountKey);
-    int count = countStr != null && countStr.isNotEmpty ? int.tryParse(countStr) ?? 0 : 0;
+    int count = countStr != null && countStr.isNotEmpty ? int.tryParse(
+        countStr) ?? 0 : 0;
     List<ExpenseItem> expenses = [];
 
     for (int i = 0; i < count; i++) {
@@ -41,11 +44,14 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
       String? category = await _esp.getString("expense_${i}_category");
       String? amount = await _esp.getString("expense_${i}_amount");
       String? date = await _esp.getString("expense_${i}_date");
-      String? paymentMethod = await _esp.getString("expense_${i}_paymentMethod");
+      String? paymentMethod = await _esp.getString(
+          "expense_${i}_paymentMethod");
 
-      if (idStr != null && name != null && category != null && amount != null && date != null && paymentMethod != null) {
+      if (idStr != null && name != null && category != null && amount != null &&
+          date != null && paymentMethod != null) {
         int id = int.tryParse(idStr) ?? 0;
-        expenses.add(ExpenseItem(id, name, category, amount, date, paymentMethod));
+        expenses.add(
+            ExpenseItem(id, name, category, amount, date, paymentMethod));
       }
     }
 
@@ -116,7 +122,9 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
     await _saveFormData();
 
     final newExpense = ExpenseItem(
-      DateTime.now().millisecondsSinceEpoch,
+      DateTime
+          .now()
+          .millisecondsSinceEpoch,
       _nameController.text,
       _categoryController.text,
       _amountController.text,
@@ -132,7 +140,8 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
     });
 
     await _saveExpenseList();
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Expense added.')));
+    ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Expense added.')));
 
     _nameController.clear();
     _categoryController.clear();
@@ -144,16 +153,17 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Error'),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+      builder: (context) =>
+          AlertDialog(
+            title: const Text('Error'),
+            content: Text(message),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -170,7 +180,8 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
         _expenses.removeWhere((e) => e.id == expense.id);
       });
       await _saveExpenseList();
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Expense deleted.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Expense deleted.')));
     } else {
       setState(() {
         int index = _expenses.indexWhere((e) => e.id == updatedExpense.id);
@@ -179,13 +190,17 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
         }
       });
       await _saveExpenseList();
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Expense updated.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Expense updated.')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    bool isWideScreen = MediaQuery.of(context).size.width >= 600;
+    bool isWideScreen = MediaQuery
+        .of(context)
+        .size
+        .width >= 600;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Expense Tracker'),
@@ -214,7 +229,9 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
     );
   }
 
-  Widget _buildInputForm() {
+  //bool _showList = false;
+
+   Widget _buildInputForm() {
     return Card(
       margin: const EdgeInsets.all(12),
       elevation: 6,
@@ -241,13 +258,59 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
             const SizedBox(height: 8),
             TextField(
               controller: _dateController,
-              decoration: const InputDecoration(labelText: "Date"),
-            ),
+              readOnly: true,
+              decoration: const InputDecoration(labelText: "Date",  suffixIcon: Icon(Icons.calendar_today),),
+
+          onTap: () async {
+            FocusScope.of(context).requestFocus(FocusNode());
+            final pickedDate = await showDatePicker(
+              context: context,
+              initialDate: DateTime.now(),
+              firstDate: DateTime(2000), //
+              lastDate: DateTime(2100),  //
+            );
+
+            if (pickedDate != null) {
+              setState(() {
+                // Format as YYYY-MM-DD
+                _dateController.text =
+                "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
+              });
+            }
+          },
+      ),
             const SizedBox(height: 8),
             TextField(
               controller: _paymentMethodController,
               decoration: const InputDecoration(labelText: "Payment Method"),
             ),
+            /*Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Select Payment Method",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildPaymentOption("Visa", "assets/images/visa.png"),
+                      _buildPaymentOption("MasterCard", "assets/images/mastercard.png"),
+                      _buildPaymentOption("Debit", "assets/images/debit.png"),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "Selected: ${_paymentMethodController.text.isEmpty ? 'None' : _paymentMethodController.text}",
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),*/
+
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -269,13 +332,46 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
                 ),
               ],
             ),
-          ],
-        ),
+              if (_showList) const SizedBox(height: 24),
+            if (_showList) _buildListView(),
+            if (_selectedExpense != null) const SizedBox(height: 16),
+            if (_selectedExpense != null) _buildExpenseDetail(),
+
+     ]),
+    ));
+  }
+  /*Widget _buildPaymentOption(String label, String assetPath) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _paymentMethodController.text = label;
+        });
+      },
+      child: Column(
+        children: [
+          Container(
+            height: 60,
+            width: 60,
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: _paymentMethodController.text == label
+                    ? Colors.blue
+                    : Colors.grey,
+                width: 2,
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Image.asset(assetPath, fit: BoxFit.contain),
+          ),
+          const SizedBox(height: 4),
+          Text(label, style: const TextStyle(fontSize: 12)),
+        ],
       ),
     );
-  }
+  }*/
 
-  Widget _buildListView() {
+  /*Widget _buildListView() {
     return _expenses.isEmpty
         ? const Center(child: Text('No expenses recorded.'))
         : ListView.builder(
@@ -295,82 +391,137 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
       },
     );
   }
-}
+}*/
 
-class ExpenseDetailPage extends StatelessWidget {
-  final ExpenseItem expense;
+  /*bool _showList = false; // Controls list visibility
 
-  const ExpenseDetailPage({Key? key, required this.expense}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final TextEditingController _nameController = TextEditingController(
-        text: expense.name);
-    final TextEditingController _categoryController = TextEditingController(
-        text: expense.category);
-    final TextEditingController _amountController = TextEditingController(
-        text: expense.amount);
-    final TextEditingController _dateController = TextEditingController(
-        text: expense.date);
-    final TextEditingController _paymentMethodController = TextEditingController(
-        text: expense.paymentMethod);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Expense Detail'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
+  Widget _buildInputForm() {
+    return Card(
+      margin: const EdgeInsets.all(12),
+      elevation: 6,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             TextField(
               controller: _nameController,
               decoration: const InputDecoration(labelText: "Expense Name"),
             ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _categoryController,
-              decoration: const InputDecoration(labelText: "Category"),
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _amountController,
-              decoration: const InputDecoration(labelText: "Amount"),
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _dateController,
-              decoration: const InputDecoration(labelText: "Date"),
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _paymentMethodController,
-              decoration: const InputDecoration(labelText: "Payment Method"),
-            ),
+            // other TextFields...
+
             const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () {
+                    _handleSubmit();
+                    setState(() {
+                      _showList = true;
+                    });
+                  },
+                  icon: const Icon(Icons.check),
+                  label: const Text('Add Expense'),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    await _loadPreviousFormData();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Previous data loaded.')),
+                    );
+                  },
+                  icon: const Icon(Icons.copy),
+                  label: const Text('Copy Last Entry'),
+                ),
+              ],
+            ),
+            if (_showList) const SizedBox(height: 24),
+            if (_showList) _buildListView(),
+            if (_selectedExpense != null) const SizedBox(height: 16),
+            if (_selectedExpense != null) _buildExpenseDetail(),
+          ],
+        ),
+      ),
+    );
+  }*/
+  bool _showList = false;
+  Widget _buildListView() {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: _expenses.length,
+      itemBuilder: (context, index) {
+        final expense = _expenses[index];
+        return Card(
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          elevation: 3,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10)),
+          child: ListTile(
+            title: Text(expense.name),
+            subtitle: Text("Category: ${expense.category}"),
+            onTap: () {
+              setState(() {
+                _selectedExpense = expense;
+              });
+            },
+          ),
+        );
+      },
+    /*itemBuilder: (BuildContext context, int index) {
+      if (_showList) const SizedBox(height: 24),
+    if (_showList) _buildListView(),
+    if (_selectedExpense != null) const SizedBox(height: 16),
+    if (_selectedExpense != null) _buildExpenseDetail(),
+    },*/
+    );
+  }
+
+  Widget _buildExpenseDetail() {
+    final expense = _selectedExpense!;
+    return Card(
+      margin: const EdgeInsets.all(12),
+      color: Colors.grey[200],
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Name: ${expense.name}"),
+            Text("Category: ${expense.category}"),
+            Text("Amount: ${expense.amount}"),
+            Text("Date: ${expense.date}"),
+            Text("Payment Method: ${expense.paymentMethod}"),
+            const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                ElevatedButton(
+                ElevatedButton.icon(
                   onPressed: () {
-                    final updatedExpense = ExpenseItem(
-                      expense.id,
-                      _nameController.text,
-                      _categoryController.text,
-                      _amountController.text,
-                      _dateController.text,
-                      _paymentMethodController.text,
-                    );
-                    Navigator.pop(context, updatedExpense);
+                    _navigateToExpenseDetail(expense); // Go to edit page
                   },
-                  child: const Text('Update'),
+                  icon: const Icon(Icons.edit),
+                  label: const Text("Edit"),
                 ),
-                ElevatedButton(
+                ElevatedButton.icon(
                   onPressed: () {
-                    Navigator.pop(context, null);
+                    setState(() {
+                      _expenses.remove(expense);
+                      _selectedExpense = null;
+                    });
                   },
-                  child: const Text('Delete'),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  icon: const Icon(Icons.delete),
+                  label: const Text("Delete"),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      _selectedExpense = null;
+                    });
+                  },
+                  icon: const Icon(Icons.close),
+                  label: const Text("Close"),
                 ),
               ],
             ),
@@ -380,3 +531,92 @@ class ExpenseDetailPage extends StatelessWidget {
     );
   }
 }
+
+
+  class ExpenseDetailPage extends StatelessWidget {
+    final ExpenseItem expense;
+
+    const ExpenseDetailPage({Key? key, required this.expense})
+        : super(key: key);
+
+    @override
+    Widget build(BuildContext context) {
+      final TextEditingController _nameController = TextEditingController(
+          text: expense.name);
+      final TextEditingController _categoryController = TextEditingController(
+          text: expense.category);
+      final TextEditingController _amountController = TextEditingController(
+          text: expense.amount);
+      final TextEditingController _dateController = TextEditingController(
+          text: expense.date);
+      final TextEditingController _paymentMethodController = TextEditingController(
+          text: expense.paymentMethod);
+
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Expense Detail'),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            children: [
+              TextField(
+                controller: _nameController,
+                decoration: const InputDecoration(labelText: "Expense Name"),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _categoryController,
+                decoration: const InputDecoration(labelText: "Category"),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _amountController,
+                decoration: const InputDecoration(labelText: "Amount"),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _dateController,
+                decoration: const InputDecoration(labelText: "Date"),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _paymentMethodController,
+                decoration: const InputDecoration(labelText: "Payment Method"),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      final updatedExpense = ExpenseItem(
+                        expense.id,
+                        _nameController.text,
+                        _categoryController.text,
+                        _amountController.text,
+                        _dateController.text,
+                        _paymentMethodController.text,
+                      );
+                      Navigator.pop(context, updatedExpense);
+                    },
+                    child: const Text('Update'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context, null);
+                    },
+                    child: const Text('Delete'),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+
+  }
