@@ -285,8 +285,14 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
               decoration: InputDecoration(
                 labelText: getText('vehicleName', _currentLanguage),
                 hintText: "Vehicle Name",
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.all(12.0),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(4.0), // Rounded corners
+                  borderSide: BorderSide(color: Colors.blue.shade300), // Border color
+                ),
+                filled: true,
+                fillColor: Colors.blue.shade50, // Light background color
+                contentPadding: EdgeInsets.all(16.0), // Inner padding
+                floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
               ),
             ),
 
@@ -296,7 +302,14 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
               decoration: InputDecoration(
                 labelText: getText('vehicleType', _currentLanguage),
                 hintText: "Vehicle Type",
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(4.0), // Rounded corners
+                  borderSide: BorderSide(color: Colors.blue.shade300), // Border color
+                ),
+                filled: true,
+                fillColor: Colors.blue.shade50, // Light background color
+                contentPadding: EdgeInsets.all(16.0), // Inner padding
+                floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
               ),
             ),
 
@@ -307,7 +320,14 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
               decoration: InputDecoration(
                 labelText: getText('serviceType', _currentLanguage),
                 hintText: "Service Type",
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(4.0), // Rounded corners
+                  borderSide: BorderSide(color: Colors.blue.shade300), // Border color
+                ),
+                filled: true,
+                fillColor: Colors.blue.shade50, // Light background color
+                contentPadding: EdgeInsets.all(16.0), // Inner padding
+                floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
               ),
             ),
 
@@ -318,7 +338,14 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
               decoration:  InputDecoration(
                 labelText: getText('serviceDate', _currentLanguage),
                 hintText: "Service Date",
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(4.0), // Rounded corners
+                  borderSide: BorderSide(color: Colors.blue.shade300), // Border color
+                ),
+                filled: true,
+                fillColor: Colors.blue.shade50, // Light background color
+                contentPadding: EdgeInsets.all(16.0), // Inner padding
+                floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
               ),
             ),
 
@@ -328,8 +355,14 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
               controller: _mileageController,
               decoration:  InputDecoration(
                 labelText: getText('mileage', _currentLanguage),
-                hintText: "Mileage",
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(4.0), // Rounded corners
+                  borderSide: BorderSide(color: Colors.blue.shade300), // Border color
+                ),
+                filled: true,
+                fillColor: Colors.blue.shade50, // Light background color
+                contentPadding: EdgeInsets.all(16.0), // Inner padding
+                floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
               ),
             ),
 
@@ -340,10 +373,17 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
               decoration:  InputDecoration(
                 labelText: getText('cost', _currentLanguage),
                 hintText: "Cost",
-                border: OutlineInputBorder(),
-              ),
-            ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(4.0), // Rounded corners
+                  borderSide: BorderSide(color: Colors.blue.shade300), // Border color
+                ),
 
+              filled: true,
+              fillColor: Colors.blue.shade50, // Light background color
+              contentPadding: EdgeInsets.all(16.0), // Inner padding
+              floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
+            ),
+            ),
             // SAVE and COPY PREVIOUS BUTTON SECTION
             const SizedBox(height: 30),
             Align(  // Center the button
@@ -561,6 +601,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
     );
   }
 
+  //Heading section
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -568,8 +609,13 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
         title: const Text("V E H I C L E - M A I N T E N A N C E - P A G E  |  வாகன பராமரிப்பு பக்கம்"),
         backgroundColor: Colors.lightBlueAccent[200],
         centerTitle: true,
-
         actions: [
+          SizedBox(width: 16),
+          IconButton(
+            icon: const Icon(Icons.question_mark),
+            onPressed: _showInstructions,
+          ),
+          SizedBox(width: 16),
           PopupMenuButton<String>(
             icon: const Icon(Icons.language),
             onSelected: (value) {
@@ -577,15 +623,13 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
                 _currentLanguage = value;
               });
             },
+
             itemBuilder: (context) => [
               const PopupMenuItem(value: 'en', child: Text('English')),
               const PopupMenuItem(value: 'ta', child: Text('தமிழ்')),
             ],
           ),
-          IconButton(
-            icon: const Icon(Icons.help),
-            onPressed: _showInstructions,
-          ),
+
         ],
       ),
       body: Padding(

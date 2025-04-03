@@ -33,7 +33,6 @@ class $FloorAppDatabase {
 
 class _$AppDatabaseBuilder implements $AppDatabaseBuilderContract {
   _$AppDatabaseBuilder(this.name);
-
   final String? name;
 
   final List<Migration> _migrations = [];
