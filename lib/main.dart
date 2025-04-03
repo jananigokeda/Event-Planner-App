@@ -6,17 +6,23 @@ import 'VehicleMaintenancePage.dart';
 import 'customer_list_page.dart';
 import 'event_planner_page.dart';
 import 'expense_tracker_page.dart';
+import 'database.dart';
 
 Future<void> main() async {
   var delegate = await LocalizationDelegate.create(
       fallbackLocale: 'en',
-      supportedLocales: ['en', 'ta', 'ko']
+      supportedLocales: ['en', 'ta', 'ko','te']
   );
-  runApp(LocalizedApp(delegate, const MyApp()));
+  //runApp(LocalizedApp(delegate, const MyApp()));
+  final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+  runApp(LocalizedApp(delegate, MyApp(database: database)));
+
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  //const MyApp({super.key});
+  final AppDatabase database;
+  const MyApp({super.key, required this.database});
 
   // This widget is the root of your application.
   @override
@@ -41,7 +47,7 @@ class MyApp extends StatelessWidget {
         home: const MyHomePage(title: 'Final Project Assignment Home Page'),
         routes: {
           '/EventPlanner': (context) {
-            return EventplannerPage();
+            return EventPlannerPage(database: database);
           },
           '/CustomerList': (context) {
             return CustomerListPage();
