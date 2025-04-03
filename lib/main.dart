@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-//import 'package:flutter_localizations/flutter_localizations.dart';
-//import 'package:flutter_translate/flutter_translate.dart';
+import 'package:flutter_translate/flutter_translate.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'VehicleMaintenancePage.dart';
 import 'expense_tracker_page.dart';
 import 'customer_list_page.dart';
@@ -20,7 +21,8 @@ void main() async{
       fallbackLocale: 'en',
       supportedLocales: ['en', 'ko']
   );
-  runApp(LocalizedApp(delegate, const MyApp()));
+  final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+  runApp(LocalizedApp(delegate, MyApp(database: database,)));
 }*/
 
 class MyApp extends StatelessWidget {
