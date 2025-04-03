@@ -66,7 +66,7 @@ class _$AppDatabaseBuilder implements $AppDatabaseBuilderContract {
     return database;
   }
 }
-
+@override
 class _$AppDatabase extends AppDatabase {
   _$AppDatabase([StreamController<String>? listener]) {
     changeListener = listener ?? StreamController<String>.broadcast();
@@ -108,6 +108,9 @@ class _$AppDatabase extends AppDatabase {
   CustomerDAO get customerDao {
     return _customerDaoInstance ??= _$CustomerDAO(database, changeListener);
   }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 class _$CustomerDAO extends CustomerDAO {
