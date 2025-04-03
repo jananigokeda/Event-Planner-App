@@ -9,10 +9,28 @@
       }
     }
   },
-  "expense": {
-    "instructions_title": "வழிமுறை",
-    "instructions_content": "செலவைக் காட்டுவதற்கான வழிமுறைகளை பின்பற்றவும்.",
+  "button": {
+    "Cancel": "ரத்துசெய்"
+  },
+  "Expense": {
+    "title" : "செலவு கண்காணிப்பான்",
+
+    "Expense Name": "செலவு பெயர்",
+    "Category": "வகை",
+    "Amount":  "தொகை",
+    "Date" : "தேதி",
+    "Payment Method": "கட்டண முறை",
+    "Undo":"செயல்தவிர்க்க",
+    "Edit": "திருத்து",
+    "Delete": "நீக்கு",
+    "close": "மூடு",
+
+
     "add_expense": "செலவு சேர்க்கவும்",
-    "copy_last_entry": "கடைசியாக உள்ள உள்ளீட்டை நகலெடுக்கவும்"
+    "copy_last_entry": "கடைசி நுழைவை நகலெடு",
+    "All fields are required": "எல்லா புலங்களும் தேவை",
+    "previous data gets loaded": "முந்தைய தரவு ஏற்றப்பட்டது"
+
+
   }
 }

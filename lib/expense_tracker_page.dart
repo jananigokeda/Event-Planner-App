@@ -43,7 +43,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
     );
     _loadPreviousFormData();
   }
-  void showActionSheet(
+  void showDemoActionSheet(
       {required BuildContext context, required Widget child}) {
     showCupertinoModalPopup<String>(
         context: context,
@@ -52,8 +52,8 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
     });
   }
 
-  void _onActionPress(BuildContext context) {
-    showActionSheet(
+  void _onActionsheetPress(BuildContext context) {
+    showDemoActionSheet(
       context: context,
       child: CupertinoActionSheet(
         title: Text(translate('language.selection.title')),
@@ -260,6 +260,12 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Expense Tracker'),
+          actions: [
+      IconButton(
+      icon: const Icon(Icons.language),
+      onPressed: () => _onActionsheetPress(context),
+    ),
+  ]
       ),
       body: isWideScreen ? _buildWideLayout() : _buildMobileLayout(),
     );
@@ -559,6 +565,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
     );
   }
 }
+
 
 
   class ExpenseDetailPage extends StatelessWidget {

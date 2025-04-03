@@ -41,9 +41,21 @@
     "close_detail": "Close Detail"
   },
   "expense": {
-    "instructions_title": "Instructions",
-    "instructions_content": "Follow the instructions to add an expense.",
+    "title" : "Expense Tracker",
+    "Expense Name": "Expense Name",
+    "Category": "Category",
+    "Amount": "Amount",
+    "Date" : "Date",
+    "Payment Method": "Payment Method",
+    "Undo": "undo",
+    "Edit": "Edit",
+    "Delete": "Delete",
+    "close": "close",
     "add_expense": "Add Expense",
-    "copy_last_entry": "Copy Last Entry"
+    "copy_last_entry": "Copy Last Entry",
+    "All fields are required":"All fields are required",
+    "previous data gets loaded":"previous data loaded"
+
+
   }
 }
