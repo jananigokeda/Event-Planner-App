@@ -1,7 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
+import 'package:flutter_translate/flutter_translate.dart';
+import 'expense_dao.dart';
 import 'expense_item.dart';
 import 'expense_repository.dart';
+import 'package:cst2335_final/database.dart';
 
 
 
@@ -13,12 +17,15 @@ class ExpenseTrackerPage extends StatefulWidget {
 }
 
 class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
+  late AppDatabase _database;
+  late ExpenseDao _expenseDao;
   final EncryptedSharedPreferences _esp = EncryptedSharedPreferences();
   final ExpenseRepository _expenseRepository = ExpenseRepository();
   final String _expenseCountKey = 'expense_count';
 
   List<ExpenseItem> _expenses = [];
   ExpenseItem? _selectedExpense;
+  String _currentLanguage = 'en';
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _categoryController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
@@ -28,9 +35,56 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
   @override
   void initState() {
     super.initState();
+    $FloorAppDatabase.databaseBuilder('app_database.db').build().then((database) {
+      _database = database;
+      _expenseDao = database.expenseDao;
     _loadExpenseList();
+    }
+    );
     _loadPreviousFormData();
   }
+  void showActionSheet(
+      {required BuildContext context, required Widget child}) {
+    showCupertinoModalPopup<String>(
+        context: context,
+        builder: (BuildContext context) => child).then((String? value) {
+      if (value != null) changeLocale(context, value);
+    });
+  }
+
+  void _onActionPress(BuildContext context) {
+    showActionSheet(
+      context: context,
+      child: CupertinoActionSheet(
+        title: Text(translate('language.selection.title')),
+        message: Text(translate('language.selection.message')),
+        actions: <Widget>[
+          CupertinoActionSheetAction(
+            child: Text(translate('language.name.en')),
+            onPressed: () => Navigator.pop(context, 'en'),
+          ),
+          CupertinoActionSheetAction(
+            child: Text(translate('language.name.ta')),
+            onPressed: () => Navigator.pop(context, 'ta'),
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          child: Text(translate('button.cancel')),
+          isDefaultAction: true,
+          onPressed: () => Navigator.pop(context, null),
+        ),
+      ),
+    );
+  }
+  /*Future<void> _loadExpenseList() async {
+    final list = await _expenseDao.getAllItems();
+    setState(() {
+      _expenses = list;
+      if (_expenses.isNotEmpty && _selectedExpense == null) {
+        _selectedExpense = _expenses[0];
+      }
+    });
+  }*/
 
   Future<void> _loadExpenseList() async {
     String? countStr = await _esp.getString(_expenseCountKey);
@@ -54,6 +108,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
             ExpenseItem(id, name, category, amount, date, paymentMethod));
       }
     }
+    final list = await _expenseDao.getAllItems();
 
     setState(() {
       _expenses = expenses;
