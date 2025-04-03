@@ -57,9 +57,9 @@ class MyApp extends StatelessWidget {
               },
               //'/ExpenseTracker: (context) => ExpenseTrackerPage(),
 
-              '/VehicleMaintenance': (context) {
+              /*'/VehicleMaintenance': (context) {
                 return VehicleMaintenancePage();
-              }
+              }*/
             })
     );
   }

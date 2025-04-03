@@ -212,14 +212,46 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
   Widget _buildWideLayout() {
     return Row(
       children: [
-        Expanded(flex: 1, child: _buildInputForm()),
+        Expanded(flex: 1, child:
+                  _buildLeftPane(),
+        ),
         const VerticalDivider(width: 1),
-        Expanded(flex: 1, child: _buildListView()),
+        Expanded(flex: 1, child: _buildExpenseDetail(),
+        ),
       ],
     );
   }
 
   Widget _buildMobileLayout() {
+    return Column(
+      children: [
+        _buildInputForm(),
+        const Divider(),
+        Expanded(
+          child: _expenses.isEmpty
+              ? const Center(child: Text('No expenses recorded.'))
+              : ListView.builder(
+            itemCount: _expenses.length,
+            itemBuilder: (context, index) {
+              final expense = _expenses[index];
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                elevation: 3,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                child: ListTile(
+                  title: Text(expense.name),
+                  subtitle: Text("Category: ${expense.category}"),
+                  onTap: () => _navigateToExpenseDetail(expense),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLeftPane() {
     return Column(
       children: [
         _buildInputForm(),
@@ -297,9 +329,9 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      _buildPaymentOption("Visa", "assets/images/visa.png"),
-                      _buildPaymentOption("MasterCard", "assets/images/mastercard.png"),
-                      _buildPaymentOption("Debit", "assets/images/debit.png"),
+                      _buildPaymentOption("Visa", "assets/images/visa.jpg"),
+                      _buildPaymentOption("MasterCard", "assets/images/mastercard.jpg"),
+                      _buildPaymentOption("Debit", "assets/images/debit.jpg"),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -312,8 +344,12 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
             ),*/
 
             const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //Row(
+              //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              alignment: WrapAlignment.center,
               children: [
                 ElevatedButton.icon(
                   onPressed: _handleSubmit,
@@ -330,12 +366,19 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
                   icon: const Icon(Icons.copy),
                   label: const Text('Copy Last Entry'),
                 ),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    _nameController.clear();
+                    _categoryController.clear();
+                    _amountController.clear();
+                    _dateController.clear();
+                    _paymentMethodController.clear();
+                  },
+                  icon: const Icon(Icons.clear_all),
+                  label: const Text('Undo'),
+                ),
               ],
             ),
-              if (_showList) const SizedBox(height: 24),
-            if (_showList) _buildListView(),
-            if (_selectedExpense != null) const SizedBox(height: 16),
-            if (_selectedExpense != null) _buildExpenseDetail(),
 
      ]),
     ));
@@ -371,84 +414,12 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
     );
   }*/
 
-  /*Widget _buildListView() {
-    return _expenses.isEmpty
-        ? const Center(child: Text('No expenses recorded.'))
-        : ListView.builder(
-      itemCount: _expenses.length,
-      itemBuilder: (context, index) {
-        final expense = _expenses[index];
-        return Card(
-          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          elevation: 3,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          child: ListTile(
-            title: Text(expense.name),
-            subtitle: Text("Category: ${expense.category}"),
-            onTap: () => _navigateToExpenseDetail(expense),
-          ),
-        );
-      },
-    );
-  }
-}*/
-
-  /*bool _showList = false; // Controls list visibility
-
-  Widget _buildInputForm() {
-    return Card(
-      margin: const EdgeInsets.all(12),
-      elevation: 6,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(labelText: "Expense Name"),
-            ),
-            // other TextFields...
-
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: () {
-                    _handleSubmit();
-                    setState(() {
-                      _showList = true;
-                    });
-                  },
-                  icon: const Icon(Icons.check),
-                  label: const Text('Add Expense'),
-                ),
-                ElevatedButton.icon(
-                  onPressed: () async {
-                    await _loadPreviousFormData();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Previous data loaded.')),
-                    );
-                  },
-                  icon: const Icon(Icons.copy),
-                  label: const Text('Copy Last Entry'),
-                ),
-              ],
-            ),
-            if (_showList) const SizedBox(height: 24),
-            if (_showList) _buildListView(),
-            if (_selectedExpense != null) const SizedBox(height: 16),
-            if (_selectedExpense != null) _buildExpenseDetail(),
-          ],
-        ),
-      ),
-    );
-  }*/
-  bool _showList = false;
   Widget _buildListView() {
-    return ListView.builder(
-      shrinkWrap: true,
+    return _expenses.isEmpty
+        ? const Center(child: Text('There is no expenses in the list'))
+        : ListView.builder(
+    //return ListView.builder(
+      //shrinkWrap: true,
       itemCount: _expenses.length,
       itemBuilder: (context, index) {
         final expense = _expenses[index];
@@ -468,17 +439,18 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
           ),
         );
       },
-    /*itemBuilder: (BuildContext context, int index) {
-      if (_showList) const SizedBox(height: 24),
-    if (_showList) _buildListView(),
-    if (_selectedExpense != null) const SizedBox(height: 16),
-    if (_selectedExpense != null) _buildExpenseDetail(),
-    },*/
+
     );
   }
 
   Widget _buildExpenseDetail() {
+    if (_selectedExpense == null) {
+      return const Center(child: Text("No expense selected."));
+    }
+
     final expense = _selectedExpense!;
+
+
     return Card(
       margin: const EdgeInsets.all(12),
       color: Colors.grey[200],
