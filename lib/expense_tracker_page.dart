@@ -76,6 +76,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
       await _esp.setString("expense_${i}_date", expense.date);
       await _esp.setString("expense_${i}_paymentMethod", expense.paymentMethod);
     }
+
   }
 
   Future<void> _loadPreviousFormData() async {
