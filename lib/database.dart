@@ -20,17 +20,4 @@ abstract class AppDatabase extends FloorDatabase {
   EventPlannerDao get eventPlannerDao;
   ExpenseDao get expenseDao;
   VehicleDao get vehicleDao;
-
-
-
-
-part 'database.g.dart';
-
-@Database(version: 1, entities: [CustomerItem, VehicleItem, ExpenseItem,EventPlannerItem])
-abstract class AppDatabase extends FloorDatabase {
-  ExpenseDao get expenseDao;
-  CustomerDao get customerDao;
-  VehicleDao get vehicleDAO;
-  EventPlannerDao get eventPlannerDao;
-
 }

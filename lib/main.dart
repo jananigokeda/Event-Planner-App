@@ -1,28 +1,22 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_translate/flutter_translate.dart';
-
 import 'VehicleMaintenancePage.dart';
 import 'customer_list_page.dart';
-import 'event_planner_page.dart';
 import 'expense_tracker_page.dart';
-import 'database.dart';
+import 'event_planner_page.dart';
 
 Future<void> main() async {
   var delegate = await LocalizationDelegate.create(
       fallbackLocale: 'en',
-      supportedLocales: ['en', 'ta', 'ko','te']
+      supportedLocales: ['en', 'ko', 'ta', 'te']
   );
-  //runApp(LocalizedApp(delegate, const MyApp()));
-  final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
-  runApp(LocalizedApp(delegate, MyApp(database: database)));
-
+  runApp(LocalizedApp(delegate, const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
-  //const MyApp({super.key});
-  final AppDatabase database;
-  const MyApp({super.key, required this.database});
+  const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
@@ -30,14 +24,12 @@ class MyApp extends StatelessWidget {
     var localizationDelegate = LocalizedApp.of(context).delegate;
 
     return LocalizationProvider(
-
         state: LocalizationProvider.of(context).state,
         child: MaterialApp(
             title: 'Flutter Demo',
             localizationsDelegates: [
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
               localizationDelegate
             ],
             supportedLocales: localizationDelegate.supportedLocales,
@@ -48,8 +40,8 @@ class MyApp extends StatelessWidget {
             ),
             home: const MyHomePage(title: 'Final Project Assignment Home Page'),
             routes: {
-              '/EventPlanner': (context) {
-                return EventPlannerPage(database: database);
+              '///EventPlanner': (context) {
+               return EventplannerPage();
               },
               '/CustomerList': (context) {
                 return CustomerListPage();
@@ -59,37 +51,9 @@ class MyApp extends StatelessWidget {
               },
               //'/ExpenseTracker: (context) => ExpenseTrackerPage(),
 
-      state: LocalizationProvider.of(context).state,
-      child: MaterialApp(
-        title: 'Flutter Demo',
-        localizationsDelegates: [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          localizationDelegate
-        ],
-        supportedLocales: localizationDelegate.supportedLocales,
-        locale: localizationDelegate.currentLocale,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
-        home: const MyHomePage(title: 'Final Project Assignment Home Page'),
-        routes: {
-          '/EventPlanner': (context) {
-            return EventPlannerPage(database: database);
-          },
-          '/CustomerList': (context) {
-            return CustomerListPage();
-          },
-          '/ExpenseTracker': (context) {
-            return ExpenseTrackerPage();
-          },
-          //'/ExpenseTracker: (context) => ExpenseTrackerPage(),
-
-
-              /*'/VehicleMaintenance': (context) {
+              '/VehicleMaintenance': (context) {
                 return VehicleMaintenancePage();
-              }*/
+              }
             })
     );
   }
