@@ -2,10 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'expense_dao.dart';
 import 'expense_item.dart';
 import 'expense_repository.dart';
 import 'package:cst2335_final/database.dart';
+
 
 
 
@@ -35,14 +37,15 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
   @override
   void initState() {
     super.initState();
-    $FloorAppDatabase.databaseBuilder('app_database.db').build().then((database) {
+    /*$FloorAppDatabase.databaseBuilder('app_database.db').build().then((database) {
       _database = database;
-      _expenseDao = database.expenseDao;
+      _expenseDao = database.expenseDao;*/
     _loadExpenseList();
-    }
-    );
+
     _loadPreviousFormData();
-  }
+    }
+    //);
+  //}
   void showDemoActionSheet(
       {required BuildContext context, required Widget child}) {
     showCupertinoModalPopup<String>(
@@ -60,22 +63,30 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
         message: Text(translate('language.selection.message')),
         actions: <Widget>[
           CupertinoActionSheetAction(
-            child: Text(translate('language.name.en')),
-            onPressed: () => Navigator.pop(context, 'en'),
+            child:
+            Text(translate('language.name.en')),
+            onPressed: () async {
+              Navigator.pop(context);
+              await changeLocale(context, 'en');
+            },
           ),
           CupertinoActionSheetAction(
             child: Text(translate('language.name.ta')),
-            onPressed: () => Navigator.pop(context, 'ta'),
+            onPressed: () async {
+              Navigator.pop(context);
+              await changeLocale(context, 'ta');
+            },
           ),
         ],
         cancelButton: CupertinoActionSheetAction(
           child: Text(translate('button.cancel')),
           isDefaultAction: true,
-          onPressed: () => Navigator.pop(context, null),
+          onPressed: () => Navigator.pop(context),
         ),
       ),
     );
   }
+
   /*Future<void> _loadExpenseList() async {
     final list = await _expenseDao.getAllItems();
     setState(() {
@@ -108,7 +119,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
             ExpenseItem(id, name, category, amount, date, paymentMethod));
       }
     }
-    final list = await _expenseDao.getAllItems();
+    //final list = await _expenseDao.getAllItems();
 
     setState(() {
       _expenses = expenses;
@@ -159,7 +170,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
         _amountController.text.isEmpty ||
         _dateController.text.isEmpty ||
         _paymentMethodController.text.isEmpty) {
-      _showErrorDialog('All fields are required.');
+      _showErrorDialog ('All fields are required.');
       return;
     }
 
@@ -259,7 +270,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
         .width >= 600;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Expense Tracker'),
+        title:  Text(translate('expense.Expense Tracker'),),
           actions: [
       IconButton(
       icon: const Icon(Icons.language),
@@ -337,23 +348,28 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
           children: [
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(labelText: "Expense Name"),
+              decoration: InputDecoration(
+            labelText: translate('expense.Expense Name'),)
             ),
             const SizedBox(height: 8),
             TextField(
               controller: _categoryController,
-              decoration: const InputDecoration(labelText: "Category"),
+              decoration: InputDecoration(
+                  labelText:translate('expense.Category'),)
             ),
             const SizedBox(height: 8),
             TextField(
               controller: _amountController,
-              decoration: const InputDecoration(labelText: "Amount"),
+              decoration: InputDecoration(
+                labelText:translate('expense.Amount'),),
             ),
             const SizedBox(height: 8),
             TextField(
               controller: _dateController,
               readOnly: true,
-              decoration: const InputDecoration(labelText: "Date",  suffixIcon: Icon(Icons.calendar_today),),
+              decoration:  InputDecoration(
+
+                labelText: translate('expense.Date'),  suffixIcon: Icon(Icons.calendar_today),),
 
           onTap: () async {
             FocusScope.of(context).requestFocus(FocusNode());
@@ -376,7 +392,8 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
             const SizedBox(height: 8),
             TextField(
               controller: _paymentMethodController,
-              decoration: const InputDecoration(labelText: "Payment Method"),
+              decoration: InputDecoration(
+                  labelText: translate('expense.Payment Method')),
             ),
             /*Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
@@ -416,17 +433,18 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
                 ElevatedButton.icon(
                   onPressed: _handleSubmit,
                   icon: const Icon(Icons.check),
-                  label: const Text('Add Expense'),
+                  label: Text(translate('expense.Add Expense'),)
                 ),
                 ElevatedButton.icon(
                   onPressed: () async {
                     await _loadPreviousFormData();
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Previous data loaded.')),
+                      SnackBar(content: Text(translate('expense.Previous data loaded.')),
+                        )
                     );
                   },
                   icon: const Icon(Icons.copy),
-                  label: const Text('Copy Last Entry'),
+                  label: Text(translate('expense.Copy Last Entry'),)
                 ),
                 ElevatedButton.icon(
                   onPressed: () {
@@ -437,7 +455,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
                     _paymentMethodController.clear();
                   },
                   icon: const Icon(Icons.clear_all),
-                  label: const Text('Undo'),
+                  label:Text(translate('expense.Undo'),)
                 ),
               ],
             ),
@@ -478,7 +496,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
 
   Widget _buildListView() {
     return _expenses.isEmpty
-        ? const Center(child: Text('There is no expenses in the list'))
+        ? Center(child: Text(translate('expense.There is no expenses in the list')))
         : ListView.builder(
     //return ListView.builder(
       //shrinkWrap: true,
@@ -507,7 +525,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
 
   Widget _buildExpenseDetail() {
     if (_selectedExpense == null) {
-      return const Center(child: Text("No expense selected."));
+      return Center(child: Text(translate('expense.no_expense_selected')));
     }
 
     final expense = _selectedExpense!;
@@ -536,7 +554,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
                     _navigateToExpenseDetail(expense); // Go to edit page
                   },
                   icon: const Icon(Icons.edit),
-                  label: const Text("Edit"),
+                  label: Text (translate('expense.Edit'),)
                 ),
                 ElevatedButton.icon(
                   onPressed: () {
@@ -546,7 +564,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
                     });
                   },
                   icon: const Icon(Icons.delete),
-                  label: const Text("Delete"),
+                  label: Text(translate('expense.Delete'),)
                 ),
                 ElevatedButton.icon(
                   onPressed: () {
@@ -555,7 +573,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
                     });
                   },
                   icon: const Icon(Icons.close),
-                  label: const Text("Close"),
+                  label: Text(translate('expense.Close'),)
                 ),
               ],
             ),
@@ -589,7 +607,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
 
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Expense Detail'),
+          title: Text(translate('Expense Detail'),),
         ),
         body: Padding(
           padding: const EdgeInsets.all(24),
@@ -597,27 +615,27 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
             children: [
               TextField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: "Expense Name"),
+                decoration: InputDecoration(labelText: translate('expense.Expense Name'),)
               ),
               const SizedBox(height: 8),
               TextField(
                 controller: _categoryController,
-                decoration: const InputDecoration(labelText: "Category"),
+                decoration: InputDecoration(labelText: translate('expense.Category'),)
               ),
               const SizedBox(height: 8),
               TextField(
                 controller: _amountController,
-                decoration: const InputDecoration(labelText: "Amount"),
+                decoration: InputDecoration(labelText:  translate('expense.Amount'),)
               ),
               const SizedBox(height: 8),
               TextField(
                 controller: _dateController,
-                decoration: const InputDecoration(labelText: "Date"),
+                decoration: InputDecoration(labelText:  translate('expense.Date'),)
               ),
               const SizedBox(height: 8),
               TextField(
                 controller: _paymentMethodController,
-                decoration: const InputDecoration(labelText: "Payment Method"),
+                decoration:InputDecoration(labelText:  translate('Payment Method'),)
               ),
               const SizedBox(height: 16),
               Row(
@@ -635,13 +653,13 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
                       );
                       Navigator.pop(context, updatedExpense);
                     },
-                    child: const Text('Update'),
+                    child: Text(translate('expense.Update'),)
                   ),
                   ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context, null);
                     },
-                    child: const Text('Delete'),
+                    child: Text(translate('expense.Delete'),),
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red),
                   ),

@@ -6,7 +6,7 @@ import 'expense_item.dart';
 @dao
 abstract class ExpenseDao {
   /// Retrieves all expense items from the database.
-  @Query("SELECT * FROM ExpenseItem")
+  @Query("Select * from ExpenseItem")
   Future<List<ExpenseItem>> getAllItems();
 
   /// Inserts a new expense item into the database.
