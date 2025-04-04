@@ -30,6 +30,7 @@ class MyApp extends StatelessWidget {
     var localizationDelegate = LocalizedApp.of(context).delegate;
 
     return LocalizationProvider(
+
         state: LocalizationProvider.of(context).state,
         child: MaterialApp(
             title: 'Flutter Demo',
@@ -57,6 +58,34 @@ class MyApp extends StatelessWidget {
                 return ExpenseTrackerPage();
               },
               //'/ExpenseTracker: (context) => ExpenseTrackerPage(),
+
+      state: LocalizationProvider.of(context).state,
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        localizationsDelegates: [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          localizationDelegate
+        ],
+        supportedLocales: localizationDelegate.supportedLocales,
+        locale: localizationDelegate.currentLocale,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        home: const MyHomePage(title: 'Final Project Assignment Home Page'),
+        routes: {
+          '/EventPlanner': (context) {
+            return EventPlannerPage(database: database);
+          },
+          '/CustomerList': (context) {
+            return CustomerListPage();
+          },
+          '/ExpenseTracker': (context) {
+            return ExpenseTrackerPage();
+          },
+          //'/ExpenseTracker: (context) => ExpenseTrackerPage(),
+
 
               /*'/VehicleMaintenance': (context) {
                 return VehicleMaintenancePage();
