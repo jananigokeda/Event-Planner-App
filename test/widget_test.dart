@@ -5,22 +5,16 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:cst2335_final/database.dart';
-import 'package:cst2335_final/expense_tracker_page.dart';
-import 'package:floor/floor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:cst2335_final/main.dart';
 
+void main() {
+  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+    // Build our app and trigger a frame.
+    await tester.pumpWidget(const MyApp());
 
-    void main() {
-      testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-        // Initialize the database before passing it to MyApp.
-        final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
-
-
-        await tester.pumpWidget(MyApp(database:database));
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);
     expect(find.text('1'), findsNothing);

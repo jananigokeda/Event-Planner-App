@@ -2,17 +2,34 @@
   "language": {
     "selection": {
       "title": "மொழி தேர்வு",
-      "message": "ஆப்பைப் பயன்படுத்தும் மொழியைத் தேர்ந்தெடுக்கவும்.",
-      "name": {
-        "en": "ஆங்கிலம்",
-        "ta": "தமிழ்"
-      }
+      "message": "ஆப்பைப் பயன்படுத்தும் மொழியைத் தேர்ந்தெடுக்கவும்."
+    },
+    "name": {
+      "en": "ஆங்கிலம்",
+      "ta": "தமிழ்"
     }
   },
+  "button": {
+    "cancel": "ரத்துசெய்"
+  },
   "expense": {
-    "instructions_title": "வழிமுறை",
-    "instructions_content": "செலவைக் காட்டுவதற்கான வழிமுறைகளை பின்பற்றவும்.",
-    "add_expense": "செலவு சேர்க்கவும்",
-    "copy_last_entry": "கடைசியாக உள்ள உள்ளீட்டை நகலெடுக்கவும்"
+    "Expense Tracker": "செலவு கண்காணிப்பான்",
+    "Expense Detail": "செலவு விவரம்",
+    "Expense Name": "செலவு பெயர்",
+    "Category": "வகை",
+    "Amount": "தொகை",
+    "Date": "தேதி",
+    "Payment Method": "கட்டண முறை",
+    "Undo": "செயல்தவிர்க்க",
+    "Edit": "திருத்து",
+    "Delete": "நீக்கு",
+    "Close": "மூடு",
+    "Add Expense": "செலவு சேர்க்கவும்",
+    "Copy Last Entry": "கடைசி நுழைவை நகலெடு",
+    "All fields are required": "எல்லா புலங்களும் தேவை",
+    "There is no expenses in the list":"பட்டியலில் எந்த செலவுகளும் இல்லை",
+    "no_expense_selected":"எந்த செலவும் தேர்ந்தெடுக்கப்படவில்லை",
+    "Update": "புதுப்பிப்பு",
+    "Previous data loaded": "முந்தைய தரவு ஏற்றப்பட்டது"
   }
 }

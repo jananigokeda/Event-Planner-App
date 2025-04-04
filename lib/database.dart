@@ -9,12 +9,21 @@ import 'package:cst2335_final/customer_item.dart';
 import 'package:cst2335_final/expense_item.dart';
 import 'package:cst2335_final/event_planner_item.dart';
 import 'package:cst2335_final/event_planner_dao.dart';
+
+import 'package:cst2335_final/vehicle_dao.dart';
 part 'database.g.dart';
 
-@Database(version: 1, entities: [CustomerItem, VehicleItem, ExpenseItem,EventPlannerItem])
+@Database(version: 1, entities: [CustomerItem, EventPlannerItem,ExpenseItem,VehicleItem,])
 abstract class AppDatabase extends FloorDatabase {
-  ExpenseDao get expenseDao;
+
   CustomerDao get customerDao;
-  VehicleDao get vehicleDAO;
   EventPlannerDao get eventPlannerDao;
+  ExpenseDao get expenseDao;
+  VehicleDao get vehicleDao;
+
+
+
+
+
+
 }
