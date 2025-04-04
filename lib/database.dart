@@ -15,7 +15,7 @@ part 'database.g.dart';
 abstract class AppDatabase extends FloorDatabase {
 
   CustomerDao get customerDao;
-  //EventPlannerDao get eventPlannerDao;
+  EventPlannerDao get eventPlannerDao;
   ExpenseDao get expenseDao;
   VehicleDao get vehicleDao;
 }
