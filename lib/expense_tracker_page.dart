@@ -129,6 +129,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
       String? paymentMethod = await _esp.getString(
           "expense_${i}_paymentMethod");
 
+
       if (idStr != null && name != null && category != null && amount != null &&
           date != null && paymentMethod != null) {
         int id = int.tryParse(idStr) ?? 0;

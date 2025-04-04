@@ -41,6 +41,7 @@ class ExpenseRepository {
     // Store the list in a persistent storage (e.g., database or file)
   }
 
+
   /// Placeholder method to retrieve all stored expenses.
   /// Can be connected to a database or local file storage.
   Future<List<ExpenseItem>> getAllExpenses() async {
