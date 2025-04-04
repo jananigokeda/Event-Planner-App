@@ -1,16 +1,19 @@
+// Importing required Flutter and third-party packages
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+
+// Import local project files
 import 'expense_dao.dart';
 import 'expense_item.dart';
 import 'expense_repository.dart';
 import 'package:cst2335_final/database.dart';
 
 
-
-
+/// ExpenseTrackerPage is the main page for managing and viewing expenses.
+/// It supports localization, form persistence, and encrypted local storage.
 class ExpenseTrackerPage extends StatefulWidget {
   const ExpenseTrackerPage({super.key});
 
@@ -19,15 +22,27 @@ class ExpenseTrackerPage extends StatefulWidget {
 }
 
 class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
+  //Database and data access objects
   late AppDatabase _database;
   late ExpenseDao _expenseDao;
+
+
+  //Encrypted shared preferences for secure local storage
   final EncryptedSharedPreferences _esp = EncryptedSharedPreferences();
+  // Repository to handle expense form data storage
   final ExpenseRepository _expenseRepository = ExpenseRepository();
   final String _expenseCountKey = 'expense_count';
 
+  // List of all expenses
   List<ExpenseItem> _expenses = [];
+
+  // Currently selected expense (for details view)
   ExpenseItem? _selectedExpense;
+
+  // Current language selected for UI
   String _currentLanguage = 'en';
+
+  // Controllers for each input field
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _categoryController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
@@ -37,15 +52,11 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
   @override
   void initState() {
     super.initState();
-    /*$FloorAppDatabase.databaseBuilder('app_database.db').build().then((database) {
-      _database = database;
-      _expenseDao = database.expenseDao;*/
-    _loadExpenseList();
-
-    _loadPreviousFormData();
+    _loadExpenseList(); // Load saved expenses from secure storage
+    _loadPreviousFormData(); // Load last entered form data
     }
-    //);
-  //}
+
+  /// Show Cupertino-style language selection popup
   void showDemoActionSheet(
       {required BuildContext context, required Widget child}) {
     showCupertinoModalPopup<String>(
@@ -55,6 +66,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
     });
   }
 
+  /// Called when language icon is pressed
   void _onActionsheetPress(BuildContext context) {
     showDemoActionSheet(
       context: context,
@@ -62,6 +74,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
         title: Text(translate('language.selection.title')),
         message: Text(translate('language.selection.message')),
         actions: <Widget>[
+          // English
           CupertinoActionSheetAction(
             child:
             Text(translate('language.name.en')),
@@ -70,6 +83,8 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
               await changeLocale(context, 'en');
             },
           ),
+
+          // Tamil
           CupertinoActionSheetAction(
             child: Text(translate('language.name.ta')),
             onPressed: () async {
@@ -87,6 +102,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
     );
   }
 
+
   /*Future<void> _loadExpenseList() async {
     final list = await _expenseDao.getAllItems();
     setState(() {
@@ -97,6 +113,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
     });
   }*/
 
+  /// Load expenses from EncryptedSharedPreferences
   Future<void> _loadExpenseList() async {
     String? countStr = await _esp.getString(_expenseCountKey);
     int count = countStr != null && countStr.isNotEmpty ? int.tryParse(
@@ -129,6 +146,8 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
     });
   }
 
+
+  /// Save the current list of expenses securely
   Future<void> _saveExpenseList() async {
     int count = _expenses.length;
     await _esp.setString(_expenseCountKey, count.toString());
@@ -145,6 +164,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
 
   }
 
+  /// Load last saved form data for convenience
   Future<void> _loadPreviousFormData() async {
     final data = await _expenseRepository.loadData();
     _nameController.text = data["name"] ?? '';
@@ -154,6 +174,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
     _paymentMethodController.text = data["paymentMethod"] ?? '';
   }
 
+  /// Save current form data for future reuse
   Future<void> _saveFormData() async {
     await _expenseRepository.saveData(
       _nameController.text,
@@ -164,7 +185,10 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
     );
   }
 
+
+  /// Handles form validation and new expense creation
   Future<void> _handleSubmit() async {
+    // Validate that all fields are filled
     if (_nameController.text.isEmpty ||
         _categoryController.text.isEmpty ||
         _amountController.text.isEmpty ||
@@ -174,6 +198,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
       return;
     }
 
+    // Check for duplicates
     bool duplicate = _expenses.any((expense) =>
     expense.name == _nameController.text &&
         expense.category == _categoryController.text &&
@@ -188,6 +213,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
 
     await _saveFormData();
 
+    // Create a new ExpenseItem
     final newExpense = ExpenseItem(
       DateTime
           .now()
@@ -199,6 +225,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
       _paymentMethodController.text,
     );
 
+    // Add to UI and update selected
     setState(() {
       _expenses.add(newExpense);
       if (_selectedExpense == null) {
@@ -207,9 +234,11 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
     });
 
     await _saveExpenseList();
+    // Show confirmation
     ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Expense added.')));
 
+    // Clear form
     _nameController.clear();
     _categoryController.clear();
     _amountController.clear();
@@ -217,6 +246,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
     _paymentMethodController.clear();
   }
 
+  /// Display an alert dialog for errors
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
@@ -234,6 +264,8 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
     );
   }
 
+
+  /// Navigate to the detail screen for viewing or editing expense
   Future<void> _navigateToExpenseDetail(ExpenseItem expense) async {
     final updatedExpense = await Navigator.push<ExpenseItem>(
       context,
@@ -242,6 +274,8 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
       ),
     );
 
+
+     // If null, it was deleted
     if (updatedExpense == null) {
       setState(() {
         _expenses.removeWhere((e) => e.id == expense.id);
@@ -250,6 +284,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Expense deleted.')));
     } else {
+      // Otherwise update the existing item
       setState(() {
         int index = _expenses.indexWhere((e) => e.id == updatedExpense.id);
         if (index != -1) {
@@ -262,6 +297,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
     }
   }
 
+  /// Builds the main UI, switching layout based on screen size
   @override
   Widget build(BuildContext context) {
     bool isWideScreen = MediaQuery
@@ -273,6 +309,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
         title:  Text(translate('expense.Expense Tracker'),),
           actions: [
       IconButton(
+        // Language change button
       icon: const Icon(Icons.language),
       onPressed: () => _onActionsheetPress(context),
     ),
@@ -282,6 +319,8 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
     );
   }
 
+
+  /// Builds wide screen layout with left and right panes
   Widget _buildWideLayout() {
     return Row(
       children: [
@@ -295,6 +334,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
     );
   }
 
+  /// Builds vertical layout for smaller screens (mobile)
   Widget _buildMobileLayout() {
     return Column(
       children: [
@@ -324,6 +364,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
     );
   }
 
+  /// Builds left side of wide layout (form + list)
   Widget _buildLeftPane() {
     return Column(
       children: [
@@ -334,8 +375,8 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
     );
   }
 
-  //bool _showList = false;
 
+  /// Input form for entering expense details
    Widget _buildInputForm() {
     return Card(
       margin: const EdgeInsets.all(12),
@@ -346,24 +387,32 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
         child: ListView(
           shrinkWrap: true,
           children: [
+
+            // Expense Name
             TextField(
               controller: _nameController,
               decoration: InputDecoration(
             labelText: translate('expense.Expense Name'),)
             ),
             const SizedBox(height: 8),
+
+            // Category
             TextField(
               controller: _categoryController,
               decoration: InputDecoration(
                   labelText:translate('expense.Category'),)
             ),
             const SizedBox(height: 8),
+
+            // Amount
             TextField(
               controller: _amountController,
               decoration: InputDecoration(
                 labelText:translate('expense.Amount'),),
             ),
             const SizedBox(height: 8),
+
+            // Date Picker
             TextField(
               controller: _dateController,
               readOnly: true,
@@ -390,6 +439,8 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
           },
       ),
             const SizedBox(height: 8),
+
+            // Payment Method
             TextField(
               controller: _paymentMethodController,
               decoration: InputDecoration(
@@ -425,6 +476,8 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
             const SizedBox(height: 16),
             //Row(
               //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+            // Action Buttons: Add, Copy Last, Undo
             Wrap(
               spacing: 10,
               runSpacing: 10,
@@ -439,7 +492,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
                   onPressed: () async {
                     await _loadPreviousFormData();
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(translate('expense.Previous data loaded.')),
+                      SnackBar(content: Text(translate('expense.Previous data loaded')),
                         )
                     );
                   },
@@ -448,6 +501,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
                 ),
                 ElevatedButton.icon(
                   onPressed: () {
+                    // Clear all form fields
                     _nameController.clear();
                     _categoryController.clear();
                     _amountController.clear();
@@ -494,12 +548,11 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
     );
   }*/
 
+  /// Builds the expense list view (used in wide layout)
   Widget _buildListView() {
     return _expenses.isEmpty
         ? Center(child: Text(translate('expense.There is no expenses in the list')))
         : ListView.builder(
-    //return ListView.builder(
-      //shrinkWrap: true,
       itemCount: _expenses.length,
       itemBuilder: (context, index) {
         final expense = _expenses[index];
@@ -523,6 +576,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
     );
   }
 
+  /// Shows detail card of selected expense in wide screen
   Widget _buildExpenseDetail() {
     if (_selectedExpense == null) {
       return Center(child: Text(translate('expense.no_expense_selected')));
@@ -546,6 +600,8 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
             Text("Date: ${expense.date}"),
             Text("Payment Method: ${expense.paymentMethod}"),
             const SizedBox(height: 12),
+
+            // Action buttons for Edit, Delete, and Close
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -585,7 +641,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
 }
 
 
-
+/// A standalone page to view and edit an existing expense
   class ExpenseDetailPage extends StatelessWidget {
     final ExpenseItem expense;
 
@@ -607,7 +663,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
 
       return Scaffold(
         appBar: AppBar(
-          title: Text(translate('Expense Detail'),),
+          title: Text(translate('expense.Expense Detail'),),
         ),
         body: Padding(
           padding: const EdgeInsets.all(24),
@@ -638,6 +694,8 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
                 decoration:InputDecoration(labelText:  translate('Payment Method'),)
               ),
               const SizedBox(height: 16),
+
+              // Update and Delete buttons
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -657,7 +715,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context, null);
+                      Navigator.pop(context, null);// delete
                     },
                     child: Text(translate('expense.Delete'),),
                     style: ElevatedButton.styleFrom(
