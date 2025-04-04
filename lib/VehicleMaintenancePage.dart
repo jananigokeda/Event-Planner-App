@@ -1,7 +1,10 @@
 
+import 'package:cst2335_final/database.dart';
+
 import 'dart:convert';
 
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
+
 import 'package:flutter/material.dart';
 import 'database.dart';
 import 'edit_vehicle_page.dart';
@@ -51,7 +54,11 @@ String getText(String key, String currentLanguage) {
 }
 
 class VehicleMaintenancePage extends StatefulWidget {
+
+  const VehicleMaintenancePage({super.key, required AppDatabase database});
+
   const VehicleMaintenancePage({Key? key}) : super(key: key);
+
 
   @override
   _VehicleMaintenancePageState createState() =>

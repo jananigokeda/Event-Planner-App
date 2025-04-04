@@ -14,5 +14,9 @@ class VehicleItem {
 
 
   const VehicleItem({this.vehicleId, required this.vehicleName, required this.vehicleType, required this.serviceType
+
+    , required this.serviceDate, required this.mileage, required this.cost});
+
   , required this.serviceDate, required this.mileage, required this.cost});
+
 }
