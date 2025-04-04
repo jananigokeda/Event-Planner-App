@@ -49,6 +49,10 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
     super.dispose();
   }
 
+  //_updateItem() creates an updated VehicleItem with the edited values
+  // Uses the DAO to update the database
+  // Calls the onUpdate callback
+  // Navigates back to previous screen
   Future<void> _updateItem() async {
     final updatedItem = VehicleItem(
       vehicleId: widget.item.vehicleId,
@@ -65,6 +69,7 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
     Navigator.pop(context); // Return to the previous page
   }
 
+  // Adding heading for the page
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,6 +82,9 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
           ),
         ],
       ),
+
+      // Implementation of the Form for the update
+      // Vehicle Name
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
