@@ -1,16 +1,16 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_translate/flutter_translate.dart';
-
 import 'VehicleMaintenancePage.dart';
 import 'customer_list_page.dart';
-import 'event_planner_page.dart';
 import 'expense_tracker_page.dart';
+import 'event_planner_page.dart';
 
 Future<void> main() async {
   var delegate = await LocalizationDelegate.create(
       fallbackLocale: 'en',
-      supportedLocales: ['en', 'ta', 'ko']
+      supportedLocales: ['en', 'ko', 'ta', 'te']
   );
   runApp(LocalizedApp(delegate, const MyApp()));
 }
@@ -24,37 +24,37 @@ class MyApp extends StatelessWidget {
     var localizationDelegate = LocalizedApp.of(context).delegate;
 
     return LocalizationProvider(
-      state: LocalizationProvider.of(context).state,
-      child: MaterialApp(
-        title: 'Flutter Demo',
-        localizationsDelegates: [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          localizationDelegate
-        ],
-        supportedLocales: localizationDelegate.supportedLocales,
-        locale: localizationDelegate.currentLocale,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
-        home: const MyHomePage(title: 'Final Project Assignment Home Page'),
-        routes: {
-          '/EventPlanner': (context) {
-            return EventplannerPage();
-          },
-          '/CustomerList': (context) {
-            return CustomerListPage();
-          },
-          '/ExpenseTracker': (context) {
-            return ExpenseTrackerPage();
-          },
-          //'/ExpenseTracker: (context) => ExpenseTrackerPage(),
+        state: LocalizationProvider.of(context).state,
+        child: MaterialApp(
+            title: 'Flutter Demo',
+            localizationsDelegates: [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              localizationDelegate
+            ],
+            supportedLocales: localizationDelegate.supportedLocales,
+            locale: localizationDelegate.currentLocale,
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+              useMaterial3: true,
+            ),
+            home: const MyHomePage(title: 'Final Project Assignment Home Page'),
+            routes: {
+              '///EventPlanner': (context) {
+               return EventplannerPage();
+              },
+              '/CustomerList': (context) {
+                return CustomerListPage();
+              },
+              '/ExpenseTracker': (context) {
+                return ExpenseTrackerPage();
+              },
+              //'/ExpenseTracker: (context) => ExpenseTrackerPage(),
 
-          '/VehicleMaintenance': (context) {
-            return VehicleMaintenancePage();
-          }
-        })
+              '/VehicleMaintenance': (context) {
+                return VehicleMaintenancePage();
+              }
+            })
     );
   }
 }

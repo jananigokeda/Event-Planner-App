@@ -3,11 +3,12 @@ import 'database.dart';
 import 'vehicle_item.dart';
 import 'vehicle_dao.dart';
 
+// New class for editting the Editing vehicle information
 class EditVehiclePage extends StatefulWidget {
   final VehicleItem item;
   final VehicleDao dao;
   final Function(VehicleItem) onUpdate;
-
+  //constructor
   const EditVehiclePage({
     Key? key,
     required this.item,
@@ -27,6 +28,7 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
   late TextEditingController _mileageController;
   late TextEditingController _costController;
 
+  //This initState() method is initializing several TextEditingController instances in a Flutter widget
   @override
   void initState() {
     super.initState();
@@ -38,6 +40,7 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
     _costController = TextEditingController(text: widget.item.cost);
   }
 
+  //This dispose() method is cleaning up resources when the Flutter widget is removed from the widget tree. Here's what it does:
   @override
   void dispose() {
     _vehicleNameController.dispose();
@@ -63,7 +66,6 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
       mileage: _mileageController.text.trim(),
       cost: _costController.text.trim(),
     );
-
     await widget.dao.updateItem(updatedItem);
     widget.onUpdate(updatedItem);
     Navigator.pop(context); // Return to the previous page
@@ -74,7 +76,7 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Edit Vehicle Details"),
+        title: const Text("EDIT VEHICLE INFORMATION - வாகனத் தகவலைத் திருத்து"),
         actions: [
           IconButton(
             icon: const Icon(Icons.save),
@@ -97,6 +99,7 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
                   border: OutlineInputBorder(),
                 ),
               ),
+              //Vehicle Type
               const SizedBox(height: 10),
               TextField(
                 controller: _vehicleTypeController,
@@ -105,6 +108,7 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
                   border: OutlineInputBorder(),
                 ),
               ),
+              //Service Type
               const SizedBox(height: 10),
               TextField(
                 controller: _serviceTypeController,
