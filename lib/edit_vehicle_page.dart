@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'database.dart';
 import 'vehicle_item.dart';
 import 'vehicle_dao.dart';
@@ -19,7 +21,7 @@ class EditVehiclePage extends StatefulWidget {
   @override
   _EditVehiclePageState createState() => _EditVehiclePageState();
 }
-
+// Declaring variables
 class _EditVehiclePageState extends State<EditVehiclePage> {
   late TextEditingController _vehicleNameController;
   late TextEditingController _vehicleTypeController;
@@ -38,6 +40,52 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
     _serviceDateController = TextEditingController(text: widget.item.serviceDate);
     _mileageController = TextEditingController(text: widget.item.mileage);
     _costController = TextEditingController(text: widget.item.cost);
+  }
+
+  /// Show Cupertino-style language selection popup
+  void showDemoActionSheet(
+      {required BuildContext context, required Widget child}) {
+    showCupertinoModalPopup<String>(
+        context: context,
+        builder: (BuildContext context) => child).then((String? value) {
+      if (value != null) changeLocale(context, value);
+    });
+  }
+
+  /// Called when language icon is pressed
+  void _onActionsheetPress(BuildContext context) {
+    showDemoActionSheet(
+      context: context,
+      child: CupertinoActionSheet(
+        title: Text(translate('language.selection.title')),
+        message: Text(translate('language.selection.message')),
+        actions: <Widget>[
+          // English
+          CupertinoActionSheetAction(
+            child:
+            Text(translate('language.name.en')),
+            onPressed: () async {
+              Navigator.pop(context);
+              await changeLocale(context, 'en');
+            },
+          ),
+
+          // Tamil
+          CupertinoActionSheetAction(
+            child: Text(translate('language.name.ta')),
+            onPressed: () async {
+              Navigator.pop(context);
+              await changeLocale(context, 'ta');
+            },
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          child: Text(translate('button.cancel')),
+          isDefaultAction: true,
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+    );
   }
 
   //This dispose() method is cleaning up resources when the Flutter widget is removed from the widget tree. Here's what it does:
@@ -74,7 +122,22 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
         const SnackBar(content: Text('Vehicle Information has been successfully updated!!.')));
   }
 
-  // Adding heading for the page
+  // Picking the date when trying to update the date
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+
+    if (picked != null) {
+      setState(() {
+        _serviceDateController.text = "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
+      });
+    }
+  }
+  // Adding heading for the updater page
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,66 +151,156 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
         ],
       ),
 
-      // Implementation of the Form for the update
+      // Implementation of the edit page form
       // Vehicle Name
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
             children: [
+            TextField(
+            controller: _vehicleNameController,
+            decoration: InputDecoration(
+              labelText: translate('vehicle.Vehicle Name'),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(4.0), // Rounded corners
+                borderSide: BorderSide(color: Colors.blue.shade300), // Border color
+              ),
+              filled: true,
+              fillColor: Colors.blue.shade50, // Light background color
+              contentPadding: EdgeInsets.all(16.0), // Inner padding
+              floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
+            ),
+          ),
+          //Vehicle Type
+              const SizedBox(height: 10),
               TextField(
                 controller: _vehicleNameController,
-                decoration: const InputDecoration(
-                  labelText: "Vehicle Name",
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: translate('vehicle.Vehicle Name'),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4.0), // Rounded corners
+                    borderSide: BorderSide(color: Colors.blue.shade300), // Border color
+                  ),
+                  filled: true,
+                  fillColor: Colors.blue.shade50, // Light background color
+                  contentPadding: EdgeInsets.all(16.0), // Inner padding
+                  floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
                 ),
               ),
-              //Vehicle Type
-              const SizedBox(height: 10),
-              TextField(
+
+              const SizedBox(height: 10), // Space between fields
+              TextField( // Vehicle Type Input
                 controller: _vehicleTypeController,
-                decoration: const InputDecoration(
-                  labelText: "Vehicle Type",
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: translate('vehicle.Vehicle Type'),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4.0), // Rounded corners
+                    borderSide: BorderSide(color: Colors.blue.shade300), // Border color
+                  ),
+                  filled: true,
+                  fillColor: Colors.blue.shade50, // Light background color
+                  contentPadding: EdgeInsets.all(16.0), // Inner padding
+                  floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
                 ),
               ),
-              //Service Type
-              const SizedBox(height: 10),
-              TextField(
+
+              //serviceType
+              const SizedBox(height: 10), // Space between fields
+              TextField( // Service Type Input
                 controller: _serviceTypeController,
-                decoration: const InputDecoration(
-                  labelText: "Service Type",
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: translate('vehicle.Service Type'),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4.0), // Rounded corners
+                    borderSide: BorderSide(color: Colors.blue.shade300), // Border color
+                  ),
+                  filled: true,
+                  fillColor: Colors.blue.shade50, // Light background color
+                  contentPadding: EdgeInsets.all(16.0), // Inner padding
+                  floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
                 ),
               ),
+
+              // Service Date
               const SizedBox(height: 10),
-              TextField(
-                controller: _serviceDateController,
-                decoration: const InputDecoration(
-                  labelText: "Service Date",
-                  border: OutlineInputBorder(),
+              GestureDetector(
+                onTap: () => _selectDate(context),
+                child: AbsorbPointer(
+                  child: TextField(
+                    controller: _serviceDateController,
+                    decoration: InputDecoration(
+                      labelText: translate('vehicle.Service Date'),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(4.0),
+                        borderSide: BorderSide(color: Colors.blue.shade300),
+                      ),
+                      filled: true,
+                      fillColor: Colors.blue.shade50,
+                      contentPadding: EdgeInsets.all(16.0),
+                      floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
+                      suffixIcon: Icon(Icons.calendar_today, color: Colors.blue.shade700),
+                    ),
+                  ),
                 ),
               ),
-              const SizedBox(height: 10),
-              TextField(
+
+              //mileage
+              const SizedBox(height: 10), // Space between fields
+              TextField( // Mileage Input
                 controller: _mileageController,
-                decoration: const InputDecoration(
-                  labelText: "Mileage",
-                  border: OutlineInputBorder(),
+                decoration:  InputDecoration(
+                  labelText: translate('vehicle.Mileage'),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4.0), // Rounded corners
+                    borderSide: BorderSide(color: Colors.blue.shade300), // Border color
+                  ),
+                  filled: true,
+                  fillColor: Colors.blue.shade50, // Light background color
+                  contentPadding: EdgeInsets.all(16.0), // Inner padding
+                  floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
                 ),
               ),
-              const SizedBox(height: 10),
-              TextField(
+
+              //Cost
+              const SizedBox(height: 10), // Space between fields
+              TextField( // Cost Input
                 controller: _costController,
-                decoration: const InputDecoration(
-                  labelText: "Cost",
-                  border: OutlineInputBorder(),
+                decoration:  InputDecoration(
+                  labelText: translate('vehicle.Cost'),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4.0), // Rounded corners
+                    borderSide: BorderSide(color: Colors.blue.shade300), // Border color
+                  ),
+
+                  filled: true,
+                  fillColor: Colors.blue.shade50, // Light background color
+                  contentPadding: EdgeInsets.all(16.0), // Inner padding
+                  floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
                 ),
+
               ),
+
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _updateItem,
-                child: const Text("SAVE CHANGES"),
+                  onPressed: () async {
+                    await _updateItem(); // This method will add the vehicle info when save button is pressed
+                  },
+                  style: ElevatedButton.styleFrom(  // Styling the button
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.lightBlueAccent,
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    elevation: 5,
+                    textStyle: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  child: Text(translate('vehicle.SAVE'))
+
               ),
             ],
           ),

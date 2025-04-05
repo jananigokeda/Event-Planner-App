@@ -61,5 +61,27 @@
     "Update": "Update",
     "Previous data loaded": "previous data loaded"
 
+  },
+
+  "vehicle": {
+    "Instructions_content":
+    "Enter all required fields to add a vehicle information.\n Copy Previous to load the last input data.\n Click save button save the vehicle information \n Click on a vehicle info to view details on the page.\nOn tablet/desktop, the right pane shows the detail view.",
+    "Vehicle Name": "Vehicle Name",
+    "Vehicle Type": "Vehicle Type",
+    "Service Type": "Service Type",
+    "Service Date": "Service Date",
+    "Mileage": "Mileage",
+    "Cost": "Cost",
+    "SAVE": "SAVE",
+    "COPY PREVIOUS": "COPY PREVIOUS",
+    "Edit": "Edit",
+    "Delete": "Delete",
+    "Close": "Close",
+    "Delete Item": "Delete Item",
+    "Yes": "Yes",
+    "No": "No",
+    "Areyousure": "Are you sure you want to delete this item?",
+    "No items": "There are no items in the list",
+    "No item selected":"There is no item selected for detail"
   }
 }

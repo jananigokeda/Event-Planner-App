@@ -2,6 +2,7 @@
 import 'package:cst2335_final/database.dart';
 import 'dart:convert';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'database.dart';
@@ -43,6 +44,51 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
     });
   }
 
+  /// Show Cupertino-style language selection popup
+  void showDemoActionSheet(
+      {required BuildContext context, required Widget child}) {
+     showCupertinoModalPopup<String>(
+        context: context,
+        builder: (BuildContext context) => child).then((String? value) {
+      if (value != null) changeLocale(context, value);
+    });
+  }
+
+  /// Called when language icon is pressed
+  void _onActionsheetPress(BuildContext context) {
+    showDemoActionSheet(
+      context: context,
+      child: CupertinoActionSheet(
+        title: Text(translate('language.selection.title')),
+        message: Text(translate('language.selection.message')),
+        actions: <Widget>[
+          // English
+          CupertinoActionSheetAction(
+            child:
+            Text(translate('language.name.en')),
+            onPressed: () async {
+              Navigator.pop(context);
+              await changeLocale(context, 'en');
+            },
+          ),
+
+          // Tamil
+          CupertinoActionSheetAction(
+            child: Text(translate('language.name.ta')),
+            onPressed: () async {
+              Navigator.pop(context);
+              await changeLocale(context, 'ta');
+            },
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          child: Text(translate('vehicle.Close')),
+          isDefaultAction: true,
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+    );
+  }
 
   Future<void> _loadItems() async {
     final items = await myDAO.getAllItems();
@@ -176,8 +222,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
             TextField(
               controller: _vehicleNameController,
               decoration: InputDecoration(
-                labelText: getText('vehicleName', _currentLanguage),
-                hintText: "Vehicle Name",
+                labelText: translate('vehicle.Vehicle Name'),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(4.0), // Rounded corners
                   borderSide: BorderSide(color: Colors.blue.shade300), // Border color
@@ -193,8 +238,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
             TextField( // Vehicle Type Input
               controller: _vehicleTypeController,
               decoration: InputDecoration(
-                labelText: getText('vehicleType', _currentLanguage),
-                hintText: "Vehicle Type",
+                labelText: translate('vehicle.Vehicle Type'),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(4.0), // Rounded corners
                   borderSide: BorderSide(color: Colors.blue.shade300), // Border color
@@ -211,8 +255,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
             TextField( // Service Type Input
               controller: _serviceTypeController,
               decoration: InputDecoration(
-                labelText: getText('serviceType', _currentLanguage),
-                hintText: "Service Type",
+                labelText: translate('vehicle.Service Type'),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(4.0), // Rounded corners
                   borderSide: BorderSide(color: Colors.blue.shade300), // Border color
@@ -232,8 +275,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
                 child: TextField(
                   controller: _serviceDateController,
                   decoration: InputDecoration(
-                    labelText: getText('serviceDate', _currentLanguage),
-                    hintText: "YYYY-MM-DD",
+                    labelText: translate('vehicle.Service Date'),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(4.0),
                       borderSide: BorderSide(color: Colors.blue.shade300),
@@ -253,8 +295,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
             TextField( // Mileage Input
               controller: _mileageController,
               decoration:  InputDecoration(
-                labelText: getText('mileage', _currentLanguage),
-
+                labelText: translate('vehicle.Mileage'),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(4.0), // Rounded corners
                   borderSide: BorderSide(color: Colors.blue.shade300), // Border color
@@ -271,8 +312,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
             TextField( // Cost Input
               controller: _costController,
               decoration:  InputDecoration(
-                labelText: getText('cost', _currentLanguage),
-                hintText: "Cost",
+                labelText: translate('vehicle.Cost'),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(4.0), // Rounded corners
                   borderSide: BorderSide(color: Colors.blue.shade300), // Border color
@@ -308,7 +348,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    child: Text(getText('SAVE', _currentLanguage))
+                    child: Text(translate('vehicle.SAVE'))
 
                 ),
                 const SizedBox(width: 20),
@@ -328,7 +368,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
                     ),
                   ),
                   onPressed: () {  },
-                  child: Text(getText('COPY PREVIOUS', _currentLanguage)),
+                  child: Text(translate('vehicle.COPY PREVIOUS')),
                 ),
               ],
             )
@@ -343,7 +383,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
             thickness: 1.0), // Thickness of the line
         Expanded(
           child: _items.isEmpty
-              ? const Center(child: Text("There are no items in the list."))
+              ? Center(child: Text("There are no items in the list."))
               : ListView.builder(
             itemCount: _items.length,
             itemBuilder: (context, index) {
@@ -391,7 +431,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
         const SizedBox(height: 4),
         Container(
           height: 1,
-          color: Colors.lightBlue[300],
+          color: Colors.black,
         ),
       ],
     );
@@ -408,7 +448,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
             borderRadius: BorderRadius.circular(8.0),
           ),
           padding: const EdgeInsets.all(16.0),
-          child: const Text("There is no item selected for detail."),
+          child: Text("There is no item selected for detail"),
         ),
       );
     }
@@ -449,7 +489,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
                 },
                 icon: const Icon(Icons.delete, color: Colors.white),
                 label: Text(
-                  getText('Delete', _currentLanguage),  // Localized text
+                    (translate('vehicle.Delete')), // Localized text
                   style: const TextStyle(color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -476,7 +516,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
                 },
                 icon: const Icon(Icons.edit, color: Colors.white),
                 label: Text(
-                  getText('Edit', _currentLanguage),  // Localized text
+                    translate('vehicle.Edit'),  // Localized text
                   style: const TextStyle(color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
@@ -486,7 +526,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
                 onPressed: _closeDetails,
                 icon: const Icon(Icons.close, color: Colors.white),
                 label: Text(
-                  getText('Close', _currentLanguage),  // Localized text
+                   (translate('vehicle.Close')), // Localized text
                   style: const TextStyle(color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
@@ -534,8 +574,8 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(getText('instructions_title', _currentLanguage)),
-        content: Text(getText('instructions_content', _currentLanguage)),
+        title: Text(translate('vehicle.Instructions_title')),
+        content: Text(translate('vehicle.Instructions_content')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -560,75 +600,17 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
             icon: const Icon(Icons.question_mark),
             onPressed: _showInstructions,
           ),
-          SizedBox(width: 16),
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.language),
-            onSelected: (value) {
-              setState(() {
-                _currentLanguage = value;
-              });
-            },
-
-            itemBuilder: (context) => [
-              const PopupMenuItem(value: 'en', child: Text('English')),
-              const PopupMenuItem(value: 'ta', child: Text('தமிழ்')),
-            ],
-          ),
-
-        ],
+      IconButton(
+          icon: const Icon(Icons.language),
+          onPressed: () => _onActionsheetPress(context),
+         ),
+      ]
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: _reactiveLayout(context),
       ),
     );
-  }
-
-
-
-
-
-
-  final Map<String, Map<String, String>> localizedValues = {
-    'en': {
-      'instructions_content':
-      'Enter all required fields to add a vehicle information.\nTap "Copy Previous" to load the last input data.\n Click save button save the vehicle information \n Click on a vehicle info to view details on the page.\nOn tablet/desktop, the right pane shows the detail view.\n',
-      'vehicleName': 'Vehicle Name',
-      'vehicleType': 'Vehicle Type',
-      'serviceType': 'Service Type',
-      'serviceDate': 'Service Date',
-      'mileage': 'Mileage',
-      'cost': 'Cost',
-      'save': 'Save',
-      'copy_previous': 'Copy Previous',
-      'edit': 'Edit',
-      'delete': 'Delete',
-      'close': 'Close',
-      'Delete Item': 'Delete Item',
-      'yes': 'Yes',
-      'no': 'No',
-      'Are you sure you want to delete this item?': 'Are you sure you want to delete this item?'
-          'There are no items in the list'
-    },
-    'ta': {
-      'instructions_content':
-      'வாகனத் தகவலைச் சேர்க்க தேவையான அனைத்து புலங்களையும் உள்ளிடவும்.\n கடைசி உள்ளீட்டுத் தரவை ஏற்ற "முந்தையதை நகலெடு" என்பதைத் தட்டவும்.\nவாகனத் தகவலைச் சேமிக்க சேமி பொத்தானைக் கிளிக் செய்யவும்.\nபக்கத்தில் விவரங்களைக் காண வாகனத் தகவலைக் கிளிக் செய்யவும்.\n',
-      'vehicleName': 'வாகனத்தின் பெயர்',
-      'vehicleType': 'வாகன வகை',
-      'serviceType': 'சேவை வகை',
-      'serviceDate': 'சேவை தேதி',
-      'mileage': 'மைலேஜ்',
-      'cost': 'விலை',
-      'SAVE': 'சேமிக்க',
-      'COPY PREVIOUS': 'முந்தைய_நகல்',
-      'Edit': 'திருத்தவும்',
-      'Delete': 'நீக்கவும்',
-      'Close': 'மூடு'
-    },
-  };
-  /// Returns the localized string for the given key.
-  String getText(String key, String currentLanguage) {
-    return localizedValues[currentLanguage]?[key] ?? key;
   }
 
 }
