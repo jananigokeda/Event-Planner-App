@@ -17,7 +17,7 @@ class VehicleMaintenancePage extends StatefulWidget {
   _VehicleMaintenancePageState createState() =>
       _VehicleMaintenancePageState();
 }
-
+//declare All Controllers
 class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
   late VehicleDao myDAO;
   final List<VehicleItem> _items = [];
@@ -90,6 +90,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
     );
   }
 
+  // This method will use the getAllItems method to load the data from the database.
   Future<void> _loadItems() async {
     final items = await myDAO.getAllItems();
     setState(() {
@@ -98,6 +99,8 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
     });
   }
 
+  // This function is responsible for adding the vehicle information to the database.
+  // it will collect all the information in  newItem object and use myDAO.insertItem(newItem) to add to the database
   Future<void> _addItem() async {
     String vehicleName = _vehicleNameController.text.trim();
     String vehicleType = _vehicleTypeController.text.trim();
@@ -138,6 +141,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
   }
 
   // Deleting the item from the list
+  // This will use the deleteItem() function to delete the selected item
   Future<void> _removeItem(int index) async {
     showDialog(
       context: context,
@@ -327,6 +331,8 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
 
             // SAVE button
             // Implementation of the SAVE button and COPY PREVIOUS BUTTON SECTION
+            // Once the save button is clicked, it will call the _addItem function
+            // _addItem will then access the insertItem function to insert the information
             const SizedBox(height: 30),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -377,6 +383,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
 
         // This is the bottom part of the form which display the information from the database by calling the _showDetails
         // If the database is empty, it will dispaly, There are no items in the list
+        //Wrap each ListTile with Container
         const SizedBox(height: 25),
         const Divider( // Add the Divider widget
             color: Colors.grey, // Color of the line
@@ -387,12 +394,11 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
               : ListView.builder(
             itemCount: _items.length,
             itemBuilder: (context, index) {
+
               return Container( // Wrap each ListTile with Container
                 margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0), // Add margin for spacing between blocks
                 decoration: BoxDecoration( // Add background, border, and rounded corners
                   color: Colors.white, // Background color for the block
-                  // border: Border.all(color: Colors.grey, width: 1.0), // Border
-                  //borderRadius: BorderRadius.circular(8.0), // Rounded corners
                 ),
                 child: GestureDetector(
                   onTap: () {
@@ -407,6 +413,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
                   ),
                 ),
               );
+
             },
           ),
         ),
@@ -436,9 +443,9 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
       ],
     );
   }
-
+  //DETAIL PAGE
   // This detail page will show on the right side of the screen
-
+  // If the there is noi selection, it will say the There is no item selected for detail
   Widget _detailsPage() {
     if (_selectedItem == null) {
       return Center(
@@ -452,7 +459,8 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
         ),
       );
     }
-    // adding rectangle container
+    // ADDING rectangle container
+    // _buildUnderlinedField - special function i created to handle the disply of the detail page
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey, width: 1.0),
@@ -479,6 +487,9 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
           const SizedBox(height: 40),
 
           // Add the Row as another child of the Column
+          // DELETE button which will delete the record when we click the button
+          // Once clicked, it will call the _removeItem function
+          //_remove will call the myDAO.deleteItem method to delete the information.
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -494,6 +505,9 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
                 ),
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
               ),
+
+              // EDIT button. Once clicked, it goes to edit_vehicle_page.dart
+              // and user will have the ability to edit the existing data
               const SizedBox(width: 10),
               ElevatedButton.icon(
                 onPressed: () {
@@ -521,6 +535,8 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
                 ),
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
               ),
+
+              // CLOSE button for closing the detail page
               const SizedBox(width: 10),
               ElevatedButton.icon(
                 onPressed: _closeDetails,
@@ -538,6 +554,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
     );
   }
 
+  // Layout for screens
   Widget _reactiveLayout(BuildContext context) {
     var size = MediaQuery.of(context).size;
     var width = size.width;

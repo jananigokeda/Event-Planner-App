@@ -142,7 +142,7 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("EDIT VEHICLE INFORMATION - வாகனத் தகவலைத் திருத்து"),
+        title: const Text("வாகனத் தகவலைத் திருத்து"),
         actions: [
           IconButton(
             icon: const Icon(Icons.save),
