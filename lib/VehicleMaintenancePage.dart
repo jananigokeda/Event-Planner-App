@@ -3,54 +3,11 @@ import 'package:cst2335_final/database.dart';
 import 'dart:convert';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 import 'database.dart';
 import 'edit_vehicle_page.dart';
 import 'vehicle_item.dart';
 import 'vehicle_dao.dart';
-
-final Map<String, Map<String, String>> localizedValues = {
-  'en': {
-    'instructions_content':
-    'Enter all required fields to add a vehicle information.\nTap "Copy Previous" to load the last input data.\n Click save button save the vehicle information \n Click on a vehicle info to view details on the page.\nOn tablet/desktop, the right pane shows the detail view.\n',
-    'vehicleName': 'Vehicle Name',
-    'vehicleType': 'Vehicle Type',
-    'serviceType': 'Service Type',
-    'serviceDate': 'Service Date',
-    'mileage': 'Mileage',
-    'cost': 'Cost',
-    'save': 'Save',
-    'copy_previous': 'Copy Previous',
-    'edit': 'Edit',
-    'delete': 'Delete',
-    'close': 'Close',
-    'Delete Item': 'Delete Item',
-    'yes': 'Yes',
-    'no': 'No',
-    'Are you sure you want to delete this item?': 'Are you sure you want to delete this item?'
-        'There are no items in the list'
-  },
-  'ta': {
-    'instructions_content':
-    'வாகனத் தகவலைச் சேர்க்க தேவையான அனைத்து புலங்களையும் உள்ளிடவும்.\n கடைசி உள்ளீட்டுத் தரவை ஏற்ற "முந்தையதை நகலெடு" என்பதைத் தட்டவும்.\nவாகனத் தகவலைச் சேமிக்க சேமி பொத்தானைக் கிளிக் செய்யவும்.\nபக்கத்தில் விவரங்களைக் காண வாகனத் தகவலைக் கிளிக் செய்யவும்.\n',
-    'vehicleName': 'வாகனத்தின் பெயர்',
-    'vehicleType': 'வாகன வகை',
-    'serviceType': 'சேவை வகை',
-    'serviceDate': 'சேவை தேதி',
-    'mileage': 'மைலேஜ்',
-    'cost': 'விலை',
-    'SAVE': 'சேமிக்க',
-    'COPY PREVIOUS': 'முந்தைய_நகல்',
-    'Edit': 'திருத்தவும்',
-    'Delete': 'நீக்கவும்',
-    'Close': 'மூடு'
-  },
-};
-
-
-/// Returns the localized string for the given key.
-String getText(String key, String currentLanguage) {
-  return localizedValues[currentLanguage]?[key] ?? key;
-}
 
 class VehicleMaintenancePage extends StatefulWidget {
   const VehicleMaintenancePage({Key? key}) : super(key: key);
@@ -125,21 +82,12 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
           ],
         ),
       );
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Vehicle Information has been successfully saved!!.')));
     } else {
       // Show validation error dialog
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text("Error"),
-          content: const Text("Vehicle information required!! Please input vehicle info"),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("OK"),
-            ),
-          ],
-        ),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Vehicle information required!! Please input vehicle info.')));
     }
   }
 
@@ -306,6 +254,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
               controller: _mileageController,
               decoration:  InputDecoration(
                 labelText: getText('mileage', _currentLanguage),
+
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(4.0), // Rounded corners
                   borderSide: BorderSide(color: Colors.blue.shade300), // Border color
@@ -634,4 +583,53 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
       ),
     );
   }
+
+
+
+
+
+
+  final Map<String, Map<String, String>> localizedValues = {
+    'en': {
+      'instructions_content':
+      'Enter all required fields to add a vehicle information.\nTap "Copy Previous" to load the last input data.\n Click save button save the vehicle information \n Click on a vehicle info to view details on the page.\nOn tablet/desktop, the right pane shows the detail view.\n',
+      'vehicleName': 'Vehicle Name',
+      'vehicleType': 'Vehicle Type',
+      'serviceType': 'Service Type',
+      'serviceDate': 'Service Date',
+      'mileage': 'Mileage',
+      'cost': 'Cost',
+      'save': 'Save',
+      'copy_previous': 'Copy Previous',
+      'edit': 'Edit',
+      'delete': 'Delete',
+      'close': 'Close',
+      'Delete Item': 'Delete Item',
+      'yes': 'Yes',
+      'no': 'No',
+      'Are you sure you want to delete this item?': 'Are you sure you want to delete this item?'
+          'There are no items in the list'
+    },
+    'ta': {
+      'instructions_content':
+      'வாகனத் தகவலைச் சேர்க்க தேவையான அனைத்து புலங்களையும் உள்ளிடவும்.\n கடைசி உள்ளீட்டுத் தரவை ஏற்ற "முந்தையதை நகலெடு" என்பதைத் தட்டவும்.\nவாகனத் தகவலைச் சேமிக்க சேமி பொத்தானைக் கிளிக் செய்யவும்.\nபக்கத்தில் விவரங்களைக் காண வாகனத் தகவலைக் கிளிக் செய்யவும்.\n',
+      'vehicleName': 'வாகனத்தின் பெயர்',
+      'vehicleType': 'வாகன வகை',
+      'serviceType': 'சேவை வகை',
+      'serviceDate': 'சேவை தேதி',
+      'mileage': 'மைலேஜ்',
+      'cost': 'விலை',
+      'SAVE': 'சேமிக்க',
+      'COPY PREVIOUS': 'முந்தைய_நகல்',
+      'Edit': 'திருத்தவும்',
+      'Delete': 'நீக்கவும்',
+      'Close': 'மூடு'
+    },
+  };
+  /// Returns the localized string for the given key.
+  String getText(String key, String currentLanguage) {
+    return localizedValues[currentLanguage]?[key] ?? key;
+  }
+
 }
+

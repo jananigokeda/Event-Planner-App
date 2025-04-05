@@ -69,6 +69,9 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
     await widget.dao.updateItem(updatedItem);
     widget.onUpdate(updatedItem);
     Navigator.pop(context); // Return to the previous page
+
+    ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Vehicle Information has been successfully updated!!.')));
   }
 
   // Adding heading for the page
