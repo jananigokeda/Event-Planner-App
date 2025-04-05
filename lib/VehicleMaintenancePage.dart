@@ -1,4 +1,5 @@
 
+import 'package:cst2335_final/database.dart';
 import 'dart:convert';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/material.dart';
@@ -52,9 +53,7 @@ String getText(String key, String currentLanguage) {
 }
 
 class VehicleMaintenancePage extends StatefulWidget {
-  
   const VehicleMaintenancePage({Key? key}) : super(key: key);
-
 
   @override
   _VehicleMaintenancePageState createState() =>
@@ -73,12 +72,11 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
   VehicleItem? _selectedItem;
   bool _isEditing = false; // Track if we're editing
   late AppDatabase _database;
-  late final EncryptedSharedPreferences _storage;
+  late EncryptedSharedPreferences encryptedPrefs  = EncryptedSharedPreferences();
 
   @override
   void initState() {
     super.initState();
-    _loadPreviousFormData(); // Load saved data automatically
 
     // Build the Floor database and get the DAO.
     $FloorAppDatabase.databaseBuilder('app_database.db').build().then((database) {
@@ -203,41 +201,6 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
     setState(() {
       _isEditing = editing;
     });
-  }
-
-  // Save current form data
-  Future<void> _saveCurrentFormData() async {
-    final formData = {
-      'vehicleName': _vehicleNameController.text,
-      'vehicleType': _vehicleTypeController.text,
-      'serviceType': _serviceTypeController.text,
-      'serviceDate': _serviceDateController.text,
-      'mileage': _mileageController.text,
-      'cost': _costController.text,
-    };
-
-    await _storage.setString('lastVehicleFormData', jsonEncode(formData));
-  }
-
-// Load previous form data
-  Future<void> _loadPreviousFormData() async {
-    try {
-      final encryptedData = await _storage.getString('lastVehicleFormData');
-      if (encryptedData != null) {
-        final formData = jsonDecode(encryptedData) as Map<String, dynamic>;
-
-        setState(() {
-          _vehicleNameController.text = formData['vehicleName'] ?? '';
-          _vehicleTypeController.text = formData['vehicleType'] ?? '';
-          _serviceTypeController.text = formData['serviceType'] ?? '';
-          _serviceDateController.text = formData['serviceDate'] ?? '';
-          _mileageController.text = formData['mileage'] ?? '';
-          _costController.text = formData['cost'] ?? '';
-        });
-      }
-    } catch (e) {
-      debugPrint('Error loading previous data: $e');
-    }
   }
 
   // Picking the date
@@ -366,43 +329,42 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
                   borderSide: BorderSide(color: Colors.blue.shade300), // Border color
                 ),
 
-              filled: true,
-              fillColor: Colors.blue.shade50, // Light background color
-              contentPadding: EdgeInsets.all(16.0), // Inner padding
-              floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
-            ),
+                filled: true,
+                fillColor: Colors.blue.shade50, // Light background color
+                contentPadding: EdgeInsets.all(16.0), // Inner padding
+                floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
+              ),
             ),
 
-
+            // SAVE button
             // Implementation of the SAVE button and COPY PREVIOUS BUTTON SECTION
             const SizedBox(height: 30),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-                  onPressed: () async {
-                    await _addItem(); // This method will add the vehicle info when save button is pressed
-                    await _saveCurrentFormData(); // Also save to encrypted storage
-                   },
-                  style: ElevatedButton.styleFrom(  // Styling the button
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.lightBlueAccent,
-                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
+                    onPressed: () async {
+                      await _addItem(); // This method will add the vehicle info when save button is pressed
+                    },
+                    style: ElevatedButton.styleFrom(  // Styling the button
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.lightBlueAccent,
+                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      elevation: 5,
+                      textStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    elevation: 5,
-                    textStyle: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
                     child: Text(getText('SAVE', _currentLanguage))
 
                 ),
                 const SizedBox(width: 20),
                 ElevatedButton(
-                  onPressed: _loadPreviousFormData,
+
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
                     backgroundColor: Colors.lightBlueAccent,
@@ -416,6 +378,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  onPressed: () {  },
                   child: Text(getText('COPY PREVIOUS', _currentLanguage)),
                 ),
               ],
@@ -497,9 +460,9 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
           ),
           padding: const EdgeInsets.all(16.0),
           child: const Text("There is no item selected for detail."),
-          ),
-        );
-     }
+        ),
+      );
+    }
     // adding rectangle container
     return Container(
       decoration: BoxDecoration(

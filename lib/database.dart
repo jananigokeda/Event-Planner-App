@@ -9,7 +9,6 @@ import 'package:cst2335_final/customer_item.dart';
 import 'package:cst2335_final/expense_item.dart';
 import 'package:cst2335_final/event_planner_item.dart';
 import 'package:cst2335_final/event_planner_dao.dart';
-
 import 'package:cst2335_final/vehicle_dao.dart';
 part 'database.g.dart';
 

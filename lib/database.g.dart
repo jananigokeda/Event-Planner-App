@@ -33,6 +33,7 @@ class $FloorAppDatabase {
 
 class _$AppDatabaseBuilder implements $AppDatabaseBuilderContract {
   _$AppDatabaseBuilder(this.name);
+
   final String? name;
 
   final List<Migration> _migrations = [];
@@ -65,19 +66,19 @@ class _$AppDatabaseBuilder implements $AppDatabaseBuilderContract {
     return database;
   }
 }
-@override
+
 class _$AppDatabase extends AppDatabase {
   _$AppDatabase([StreamController<String>? listener]) {
     changeListener = listener ?? StreamController<String>.broadcast();
   }
 
-  ExpenseDao? _expenseDaoInstance;
-
   CustomerDao? _customerDaoInstance;
 
-  VehicleDao? _vehicleDAOInstance;
-
   EventPlannerDao? _eventPlannerDaoInstance;
+
+  ExpenseDao? _expenseDaoInstance;
+
+  VehicleDao? _vehicleDaoInstance;
 
   Future<sqflite.Database> open(
     String path,
@@ -103,11 +104,11 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `CustomerItem` (`id` INTEGER NOT NULL, `firstName` TEXT NOT NULL, `lastName` TEXT NOT NULL, `address` TEXT NOT NULL, `birthday` TEXT NOT NULL, PRIMARY KEY (`id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `vehicle_item` (`vehicleId` INTEGER PRIMARY KEY AUTOINCREMENT, `vehicleName` TEXT NOT NULL, `vehicleType` TEXT NOT NULL, `serviceType` TEXT NOT NULL, `serviceDate` TEXT NOT NULL, `mileage` TEXT NOT NULL, `cost` TEXT NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `event_planner_item` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `date` TEXT NOT NULL, `time` TEXT NOT NULL, `location` TEXT NOT NULL, `description` TEXT NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `ExpenseItem` (`id` INTEGER NOT NULL, `name` TEXT NOT NULL, `category` TEXT NOT NULL, `amount` TEXT NOT NULL, `date` TEXT NOT NULL, `paymentMethod` TEXT NOT NULL, PRIMARY KEY (`id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `event_planner_item` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `date` TEXT NOT NULL, `time` TEXT NOT NULL, `location` TEXT NOT NULL, `description` TEXT NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `vehicle_item` (`vehicleId` INTEGER PRIMARY KEY AUTOINCREMENT, `vehicleName` TEXT NOT NULL, `vehicleType` TEXT NOT NULL, `serviceType` TEXT NOT NULL, `serviceDate` TEXT NOT NULL, `mileage` TEXT NOT NULL, `cost` TEXT NOT NULL)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -116,18 +117,8 @@ class _$AppDatabase extends AppDatabase {
   }
 
   @override
-  ExpenseDao get expenseDao {
-    return _expenseDaoInstance ??= _$ExpenseDao(database, changeListener);
-  }
-
-  @override
   CustomerDao get customerDao {
     return _customerDaoInstance ??= _$CustomerDao(database, changeListener);
-  }
-
-  @override
-  VehicleDao get vehicleDAO {
-    return _vehicleDAOInstance ??= _$VehicleDao(database, changeListener);
   }
 
   @override
@@ -137,68 +128,13 @@ class _$AppDatabase extends AppDatabase {
   }
 
   @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
-}
-
-class _$ExpenseDao extends ExpenseDao {
-  _$ExpenseDao(
-    this.database,
-    this.changeListener,
-  )   : _queryAdapter = QueryAdapter(database),
-        _expenseItemInsertionAdapter = InsertionAdapter(
-            database,
-            'ExpenseItem',
-            (ExpenseItem item) => <String, Object?>{
-                  'id': item.id,
-                  'name': item.name,
-                  'category': item.category,
-                  'amount': item.amount,
-                  'date': item.date,
-                  'paymentMethod': item.paymentMethod
-                }),
-        _expenseItemDeletionAdapter = DeletionAdapter(
-            database,
-            'ExpenseItem',
-            ['id'],
-            (ExpenseItem item) => <String, Object?>{
-                  'id': item.id,
-                  'name': item.name,
-                  'category': item.category,
-                  'amount': item.amount,
-                  'date': item.date,
-                  'paymentMethod': item.paymentMethod
-                });
-
-  final sqflite.DatabaseExecutor database;
-
-  final StreamController<String> changeListener;
-
-  final QueryAdapter _queryAdapter;
-
-  final InsertionAdapter<ExpenseItem> _expenseItemInsertionAdapter;
-
-  final DeletionAdapter<ExpenseItem> _expenseItemDeletionAdapter;
-
-  @override
-  Future<List<ExpenseItem>> getAllItems() async {
-    return _queryAdapter.queryList('SELECT * FROM ExpenseItem',
-        mapper: (Map<String, Object?> row) => ExpenseItem(
-            row['id'] as int,
-            row['name'] as String,
-            row['category'] as String,
-            row['amount'] as String,
-            row['date'] as String,
-            row['paymentMethod'] as String));
+  ExpenseDao get expenseDao {
+    return _expenseDaoInstance ??= _$ExpenseDao(database, changeListener);
   }
 
   @override
-  Future<void> insertItem(ExpenseItem itm) async {
-    await _expenseItemInsertionAdapter.insert(itm, OnConflictStrategy.abort);
-  }
-
-  @override
-  Future<void> deleteItem(ExpenseItem itm) async {
-    await _expenseItemDeletionAdapter.delete(itm);
+  VehicleDao get vehicleDao {
+    return _vehicleDaoInstance ??= _$VehicleDao(database, changeListener);
   }
 }
 
@@ -276,6 +212,150 @@ class _$CustomerDao extends CustomerDao {
   @override
   Future<void> deleteItem(CustomerItem itm) async {
     await _customerItemDeletionAdapter.delete(itm);
+  }
+}
+
+class _$EventPlannerDao extends EventPlannerDao {
+  _$EventPlannerDao(
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database),
+        _eventPlannerItemInsertionAdapter = InsertionAdapter(
+            database,
+            'event_planner_item',
+            (EventPlannerItem item) => <String, Object?>{
+                  'id': item.id,
+                  'name': item.name,
+                  'date': item.date,
+                  'time': item.time,
+                  'location': item.location,
+                  'description': item.description
+                }),
+        _eventPlannerItemUpdateAdapter = UpdateAdapter(
+            database,
+            'event_planner_item',
+            ['id'],
+            (EventPlannerItem item) => <String, Object?>{
+                  'id': item.id,
+                  'name': item.name,
+                  'date': item.date,
+                  'time': item.time,
+                  'location': item.location,
+                  'description': item.description
+                }),
+        _eventPlannerItemDeletionAdapter = DeletionAdapter(
+            database,
+            'event_planner_item',
+            ['id'],
+            (EventPlannerItem item) => <String, Object?>{
+                  'id': item.id,
+                  'name': item.name,
+                  'date': item.date,
+                  'time': item.time,
+                  'location': item.location,
+                  'description': item.description
+                });
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<EventPlannerItem> _eventPlannerItemInsertionAdapter;
+
+  final UpdateAdapter<EventPlannerItem> _eventPlannerItemUpdateAdapter;
+
+  final DeletionAdapter<EventPlannerItem> _eventPlannerItemDeletionAdapter;
+
+  @override
+  Future<List<EventPlannerItem>> getAllItems() async {
+    return _queryAdapter.queryList('SELECT * FROM event_planner_item',
+        mapper: (Map<String, Object?> row) => EventPlannerItem(
+            id: row['id'] as int?,
+            name: row['name'] as String,
+            date: row['date'] as String,
+            time: row['time'] as String,
+            location: row['location'] as String,
+            description: row['description'] as String));
+  }
+
+  @override
+  Future<void> insertItem(EventPlannerItem item) async {
+    await _eventPlannerItemInsertionAdapter.insert(
+        item, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> updateItem(EventPlannerItem item) async {
+    await _eventPlannerItemUpdateAdapter.update(item, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> deleteItem(EventPlannerItem item) async {
+    await _eventPlannerItemDeletionAdapter.delete(item);
+  }
+}
+
+class _$ExpenseDao extends ExpenseDao {
+  _$ExpenseDao(
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database),
+        _expenseItemInsertionAdapter = InsertionAdapter(
+            database,
+            'ExpenseItem',
+            (ExpenseItem item) => <String, Object?>{
+                  'id': item.id,
+                  'name': item.name,
+                  'category': item.category,
+                  'amount': item.amount,
+                  'date': item.date,
+                  'paymentMethod': item.paymentMethod
+                }),
+        _expenseItemDeletionAdapter = DeletionAdapter(
+            database,
+            'ExpenseItem',
+            ['id'],
+            (ExpenseItem item) => <String, Object?>{
+                  'id': item.id,
+                  'name': item.name,
+                  'category': item.category,
+                  'amount': item.amount,
+                  'date': item.date,
+                  'paymentMethod': item.paymentMethod
+                });
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<ExpenseItem> _expenseItemInsertionAdapter;
+
+  final DeletionAdapter<ExpenseItem> _expenseItemDeletionAdapter;
+
+  @override
+  Future<List<ExpenseItem>> getAllItems() async {
+    return _queryAdapter.queryList('Select * from ExpenseItem',
+        mapper: (Map<String, Object?> row) => ExpenseItem(
+            row['id'] as int,
+            row['name'] as String,
+            row['category'] as String,
+            row['amount'] as String,
+            row['date'] as String,
+            row['paymentMethod'] as String));
+  }
+
+  @override
+  Future<void> insertItem(ExpenseItem itm) async {
+    await _expenseItemInsertionAdapter.insert(itm, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> deleteItem(ExpenseItem itm) async {
+    await _expenseItemDeletionAdapter.delete(itm);
   }
 }
 
@@ -361,87 +441,5 @@ class _$VehicleDao extends VehicleDao {
   @override
   Future<void> deleteItem(VehicleItem item) async {
     await _vehicleItemDeletionAdapter.delete(item);
-  }
-}
-
-class _$EventPlannerDao extends EventPlannerDao {
-  _$EventPlannerDao(
-    this.database,
-    this.changeListener,
-  )   : _queryAdapter = QueryAdapter(database),
-        _eventPlannerItemInsertionAdapter = InsertionAdapter(
-            database,
-            'event_planner_item',
-            (EventPlannerItem item) => <String, Object?>{
-                  'id': item.id,
-                  'name': item.name,
-                  'date': item.date,
-                  'time': item.time,
-                  'location': item.location,
-                  'description': item.description
-                }),
-        _eventPlannerItemUpdateAdapter = UpdateAdapter(
-            database,
-            'event_planner_item',
-            ['id'],
-            (EventPlannerItem item) => <String, Object?>{
-                  'id': item.id,
-                  'name': item.name,
-                  'date': item.date,
-                  'time': item.time,
-                  'location': item.location,
-                  'description': item.description
-                }),
-        _eventPlannerItemDeletionAdapter = DeletionAdapter(
-            database,
-            'event_planner_item',
-            ['id'],
-            (EventPlannerItem item) => <String, Object?>{
-                  'id': item.id,
-                  'name': item.name,
-                  'date': item.date,
-                  'time': item.time,
-                  'location': item.location,
-                  'description': item.description
-                });
-
-  final sqflite.DatabaseExecutor database;
-
-  final StreamController<String> changeListener;
-
-  final QueryAdapter _queryAdapter;
-
-  final InsertionAdapter<EventPlannerItem> _eventPlannerItemInsertionAdapter;
-
-  final UpdateAdapter<EventPlannerItem> _eventPlannerItemUpdateAdapter;
-
-  final DeletionAdapter<EventPlannerItem> _eventPlannerItemDeletionAdapter;
-
-  @override
-  Future<List<EventPlannerItem>> getAllItems() async {
-    return _queryAdapter.queryList('SELECT * FROM event_planner_item',
-        mapper: (Map<String, Object?> row) => EventPlannerItem(
-            id: row['id'] as int?,
-            name: row['name'] as String,
-            date: row['date'] as String,
-            time: row['time'] as String,
-            location: row['location'] as String,
-            description: row['description'] as String));
-  }
-
-  @override
-  Future<void> insertItem(EventPlannerItem item) async {
-    await _eventPlannerItemInsertionAdapter.insert(
-        item, OnConflictStrategy.abort);
-  }
-
-  @override
-  Future<void> updateItem(EventPlannerItem item) async {
-    await _eventPlannerItemUpdateAdapter.update(item, OnConflictStrategy.abort);
-  }
-
-  @override
-  Future<void> deleteItem(EventPlannerItem item) async {
-    await _eventPlannerItemDeletionAdapter.delete(item);
   }
 }
