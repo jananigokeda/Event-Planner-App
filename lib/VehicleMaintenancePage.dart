@@ -29,6 +29,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
   bool _isEditing = false; // Track if we're editing
   late AppDatabase _database;
 
+  // Constructor it will get call when the app is loaded
   @override
   void initState() {
     super.initState();
@@ -99,7 +100,10 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
 
   // This method is responsible for loading the data back from the EncryptedSharedPreferences
   void loadData() async {
+    // Calling EncryptedSharedPreferences build in class and creating documents
     EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
+
+    //Retrieving the form details using getString method
     final savedVehicleName =  await prefs.getString('Vehicle Name');
     final savedVehicleType = await prefs.getString('Vehicle Type');
     final savedServiceType = await prefs.getString('Service Type');
@@ -148,6 +152,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
 
       _loadItems(); // Refresh the list
 
+      //Dialog box
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
