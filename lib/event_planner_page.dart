@@ -1,46 +1,55 @@
+import 'package:cst2335_final/event_planner_dao.dart';
 import 'package:flutter/material.dart';
 import '../database.dart';
 import 'event_planner_item.dart';
 import 'encrypted_storage.dart';
 
 class EventPlannerPage extends StatefulWidget {
-  final AppDatabase database;
-  const EventPlannerPage({super.key, required this.database});
+  const EventPlannerPage({Key? key}) : super(key: key);
+  // final AppDatabase database;
 
   @override
   State<EventPlannerPage> createState() => _EventPlannerPageState();
 }
 
 class _EventPlannerPageState extends State<EventPlannerPage> {
+  //late event_planner_dao myDAO;
   final _formKey = GlobalKey<FormState>();
-
   final _name = TextEditingController();
   final _date = TextEditingController();
   final _time = TextEditingController();
-  final _location = TextEditingController();
+  final _venue = TextEditingController();
   final _description = TextEditingController();
-
   int? _selectedId;
-  late final _dao = widget.database.eventPlannerDao;
+ // late final _dao = widget.database.eventPlannerDao;
+  late EventPlannerDao myDAO;
+  late AppDatabase _database;
   List<EventPlannerItem> _events = [];
+
 
   @override
   void initState() {
     super.initState();
-    _loadEvents();
+    // Build the Floor database and get the DAO.
+    $FloorAppDatabase.databaseBuilder('app_database.db').build().then((database) {
+      _database = database;
+      myDAO = database.eventPlannerDao;
+      _loadEvents();
+    });
   }
+  ////
 
   void _clearFields() {
     _name.clear();
     _date.clear();
     _time.clear();
-    _location.clear();
+    _venue.clear();
     _description.clear();
     _selectedId = null;
   }
 
   Future<void> _loadEvents() async {
-    final items = await _dao.getAllItems();
+    final items = await myDAO.getAllItems();
     setState(() {
       _events = items;
     });
@@ -53,15 +62,15 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
         name: _name.text.trim(),
         date: _date.text.trim(),
         time: _time.text.trim(),
-        location: _location.text.trim(),
+        venue: _venue.text.trim(),
         description: _description.text.trim(),
       );
 
       if (_selectedId == null) {
-        await _dao.insertItem(newEvent);
+        await myDAO.insertItem(newEvent);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Event added.")));
       } else {
-        await _dao.updateItem(newEvent);
+        await myDAO.updateItem(newEvent);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Event updated.")));
       }
 
@@ -71,17 +80,8 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
     }
   }
 
-  void _selectEvent(EventPlannerItem e) {
-    _selectedId = e.id;
-    _name.text = e.name;
-    _date.text = e.date;
-    _time.text = e.time;
-    _location.text = e.location;
-    _description.text = e.description;
-  }
-
   Future<void> _deleteEvent(EventPlannerItem e) async {
-    await _dao.deleteItem(e);
+    await myDAO.deleteItem(e);
     _clearFields();
     await _loadEvents();
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Event deleted.")));
@@ -92,7 +92,7 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
     _name.text = saved['name'] ?? '';
     _date.text = saved['date'] ?? '';
     _time.text = saved['time'] ?? '';
-    _location.text = saved['location'] ?? '';
+    _venue.text = saved['location'] ?? '';
     _description.text = saved['description'] ?? '';
   }
 
@@ -111,7 +111,6 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -126,10 +125,8 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
                 builder: (_) => AlertDialog(
                   title: const Text("How to Use"),
                   content: const Text(
-                    "Fill out the fields below to add an event.\n\n"
-                        "Tap an event to edit it.\n"
-                        "Long-press to delete.\n"
-                        "Tap the copy icon to reuse the last added event.",
+                    "Create and manage events using this planner. Add new events on the left, view their details on the right."
+                        "You can also save all events for reporting.",
                   ),
                   actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("OK"))],
                 ),
@@ -138,71 +135,120 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
           )
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _copyPrevious,
-        tooltip: "Copy Last Event",
-        child: const Icon(Icons.copy),
-      ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
+        padding: const EdgeInsets.all(12.0),
+        child: Row(
           children: [
-            Form(
-              key: _formKey,
+            /// Left side - Form and event list
+            Expanded(
+              flex: 1,
               child: Column(
                 children: [
-                  _buildInput(_name, "Event Name"),
-                  _buildInput(_date, "Date (YYYY-MM-DD)"),
-                  _buildInput(_time, "Time (HH:MM)"),
-                  _buildInput(_location, "Location"),
-                  _buildInput(_description, "Description"),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      ElevatedButton(
-                        onPressed: _submitEvent,
-                        child: Text(_selectedId == null ? "Add Event" : "Update Event"),
-                      ),
-                      const SizedBox(width: 10),
-                      if (_selectedId != null)
-                        ElevatedButton(
-                          onPressed: () => _deleteEvent(
-                            EventPlannerItem(
-                              id: _selectedId,
-                              name: _name.text,
-                              date: _date.text,
-                              time: _time.text,
-                              location: _location.text,
-                              description: _description.text,
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        _buildInput(_name, "Event Name"),
+                        _buildInput(_date, "Date (YYYY-MM-DD)"),
+                        _buildInput(_time, "Time (HH:MM)"),
+                        _buildInput(_venue, "Venue"),
+                        _buildInput(_description, "Description"),
+                        Row(
+                          children: [
+                            ElevatedButton(
+                              onPressed: _submitEvent,
+                              child: Text(_selectedId == null ? "Create Event" : "Save Changes"),
                             ),
-                          ),
-                          child: const Text("Delete"),
-                          style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                            const SizedBox(width: 10),
+                            ElevatedButton.icon(
+                              onPressed: _copyPrevious,
+                              icon: const Icon(Icons.copy),
+                              label: const Text('Copy Last Event'),
+                             ),
+                            const SizedBox(width: 10),
+                            OutlinedButton(
+                              onPressed: _clearFields,
+                              child: const Text("Clear Form"),
+                            ),
+                            const SizedBox(width: 10),
+                            if (_selectedId != null)
+                              ElevatedButton(
+                                onPressed: () => _deleteEvent(
+                                  EventPlannerItem(
+                                    id: _selectedId,
+                                    name: _name.text,
+                                    date: _date.text,
+                                    time: _time.text,
+                                    venue: _venue.text,
+                                    description: _description.text,
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                child: const Text("Delete Event"),
+                              ),
+                          ],
                         ),
-                    ],
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Divider(),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: _events.length,
+                      itemBuilder: (_, index) {
+                        final e = _events[index];
+                        return Card(
+                          child: ListTile(
+                            title: Text(e.name),
+                            subtitle: Text("\u{1F4C5} ${e.date} at ${e.time}\n\u{1F4CD} ${e.venue}"),
+                            onTap: () {
+                              setState(() {
+                                _selectedId = e.id;
+                                _name.text = e.name;
+                                _date.text = e.date;
+                                _time.text = e.time;
+                                _venue.text = e.venue;
+                                _description.text = e.description;
+                              });
+                            },
+                            tileColor: _selectedId == e.id ? Colors.blue[50] : null,
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+
+            const SizedBox(width: 16),
+
+            /// Right side - Event details
             Expanded(
-              child: _events.isEmpty
-                  ? const Center(child: Text("No events available."))
-                  : ListView.builder(
-                itemCount: _events.length,
-                itemBuilder: (_, index) {
-                  final e = _events[index];
-                  return Card(
-                    child: ListTile(
-                      title: Text(e.name),
-                      subtitle: Text("${e.date} at ${e.time}\n📍 ${e.location}"),
-                      onTap: () => _selectEvent(e),
-                      onLongPress: () => _deleteEvent(e),
-                    ),
-                  );
-                },
+              flex: 1,
+              child: _selectedId == null
+                  ? const Center(child: Text("Select an event to view details."))
+                  : Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade300)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text("Event Details", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 10),
+                    Text("Name: ${_name.text}"),
+                    Text("Date: ${_date.text}"),
+                    Text("Time: ${_time.text}"),
+                    Text("Venue: ${_venue.text}"),
+                    Text("Description: ${_description.text}"),
+                    Text("Database ID: $_selectedId"),
+                    const SizedBox(height: 20),
+
+                  ],
+                ),
               ),
-            )
+            ),
           ],
         ),
       ),

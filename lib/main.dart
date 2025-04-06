@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
         home: const MyHomePage(title: 'Final Project Assignment Home Page'),
         routes: {
           '/EventPlanner': (context) {
-            return EventPlannerPage(database: database);
+            return EventPlannerPage();
           },
           '/CustomerList': (context) {
             return CustomerListPage();
