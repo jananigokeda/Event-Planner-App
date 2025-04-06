@@ -8,7 +8,7 @@ Future<void> saveLastEvent(EventPlannerItem event) async {
   await _encryptedPrefs.setString('name', event.name);
   await _encryptedPrefs.setString('date', event.date);
   await _encryptedPrefs.setString('time', event.time);
-  await _encryptedPrefs.setString('location', event.location);
+  await _encryptedPrefs.setString('location', event.venue);
   await _encryptedPrefs.setString('description', event.description);
 }
 

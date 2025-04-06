@@ -228,7 +228,7 @@ class _$EventPlannerDao extends EventPlannerDao {
                   'name': item.name,
                   'date': item.date,
                   'time': item.time,
-                  'location': item.location,
+                  'venue': item.venue,
                   'description': item.description
                 }),
         _eventPlannerItemUpdateAdapter = UpdateAdapter(
@@ -240,7 +240,7 @@ class _$EventPlannerDao extends EventPlannerDao {
                   'name': item.name,
                   'date': item.date,
                   'time': item.time,
-                  'location': item.location,
+                  'venue': item.venue,
                   'description': item.description
                 }),
         _eventPlannerItemDeletionAdapter = DeletionAdapter(
@@ -252,7 +252,7 @@ class _$EventPlannerDao extends EventPlannerDao {
                   'name': item.name,
                   'date': item.date,
                   'time': item.time,
-                  'location': item.location,
+                  'venue': item.venue,
                   'description': item.description
                 });
 
@@ -276,7 +276,7 @@ class _$EventPlannerDao extends EventPlannerDao {
             name: row['name'] as String,
             date: row['date'] as String,
             time: row['time'] as String,
-            location: row['location'] as String,
+            venue: row['venue'] as String,
             description: row['description'] as String));
   }
 
@@ -443,3 +443,4 @@ class _$VehicleDao extends VehicleDao {
     await _vehicleItemDeletionAdapter.delete(item);
   }
 }
+
