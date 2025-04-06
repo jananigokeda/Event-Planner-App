@@ -280,7 +280,7 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
                 ),
 
               ),
-
+              // Save button which will call the _updateItem function when clicked
               const SizedBox(height: 20),
               ElevatedButton(
                   onPressed: () async {

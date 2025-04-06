@@ -1,11 +1,9 @@
 
 import 'package:cst2335_final/database.dart';
-import 'dart:convert';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_translate/flutter_translate.dart';
-import 'database.dart';
 import 'edit_vehicle_page.dart';
 import 'vehicle_item.dart';
 import 'vehicle_dao.dart';
@@ -30,17 +28,17 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
   VehicleItem? _selectedItem;
   bool _isEditing = false; // Track if we're editing
   late AppDatabase _database;
-  late EncryptedSharedPreferences encryptedPrefs  = EncryptedSharedPreferences();
 
   @override
   void initState() {
     super.initState();
+    loadData(); //loading the previous data when the form is loaded.
 
     // Build the Floor database and get the DAO.
     $FloorAppDatabase.databaseBuilder('app_database.db').build().then((database) {
       _database = database;
       myDAO = database.vehicleDao;
-      _loadItems();
+      _loadItems(); // Loading the list
     });
   }
 
@@ -99,6 +97,33 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
     });
   }
 
+  // This method is responsible for loading the data back from the EncryptedSharedPreferences
+  void loadData() async {
+    EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
+    final savedVehicleName =  await prefs.getString('Vehicle Name');
+    final savedVehicleType = await prefs.getString('Vehicle Type');
+    final savedServiceType = await prefs.getString('Service Type');
+    final savedServiceDate = await prefs.getString('Service Date');
+    final savedMileage = await prefs.getString('Mileage');
+    final savedCost = await prefs.getString('Cost');
+
+    setState(() {
+    if (savedVehicleName != null && savedVehicleType != null && savedServiceType != null
+        && savedServiceDate != null && savedMileage != null && savedCost!=null) {
+
+      _vehicleNameController.text = savedVehicleName;
+      _vehicleTypeController.text = savedVehicleType;
+      _serviceTypeController.text = savedServiceType;
+      _serviceDateController.text = savedServiceDate;
+      _mileageController.text = savedMileage;
+      _costController.text = savedCost;
+     }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Latest Vehicle Information has been loaded!!.')));
+    });
+
+  }
   // This function is responsible for adding the vehicle information to the database.
   // it will collect all the information in  newItem object and use myDAO.insertItem(newItem) to add to the database
   Future<void> _addItem() async {
@@ -111,13 +136,18 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
     if (vehicleName.isNotEmpty && vehicleType.isNotEmpty) {
       final newItem = VehicleItem(vehicleName: vehicleName, vehicleType: vehicleType, serviceType: serviceType, serviceDate: serviceDate, mileage: mileage, cost: cost);
       await myDAO.insertItem(newItem);
-      _vehicleNameController.clear();
-      _vehicleTypeController.clear();
-      _serviceTypeController.clear();
-      _serviceDateController.clear();
-      _mileageController.clear();
-      _costController.clear();
+
+      // Saving the vehicle data using EncryptedSharedPreferences
+      final prefs = EncryptedSharedPreferences();
+      await prefs.setString('Vehicle Name', _vehicleNameController.text);
+      await prefs.setString('Vehicle Type', _vehicleTypeController.text);
+      await prefs.setString('Service Type', _serviceTypeController.text);
+      await prefs.setString('Service Date', _serviceDateController.text);
+      await prefs.setString('Mileage', _mileageController.text);
+      await prefs.setString('Cost', _costController.text);
+
       _loadItems(); // Refresh the list
+
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -131,6 +161,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
           ],
         ),
       );
+      //showSnackBar
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Vehicle Information has been successfully saved!!.')));
     } else {
@@ -362,6 +393,8 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
                     child: Text(translate('vehicle.SAVE'))
 
                 ),
+
+                // Copy Previous button which will call the loadData function to load the previous data back.
                 const SizedBox(width: 20),
                 ElevatedButton(
 
@@ -378,9 +411,37 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  onPressed: () {  },
+                  onPressed: () async {
+                    loadData(); // Loading the previous data whe the copy previous button presssed
+                  },
                   child: Text(translate('vehicle.COPY PREVIOUS')),
                 ),
+
+                // UNDO button which will call the _closeDetails function to clear the form
+                const SizedBox(width: 20),
+                ElevatedButton(
+
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.lightBlueAccent,
+                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    elevation: 5,
+                    textStyle: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  onPressed: () async {
+                    _closeDetails(); // calling the _closeDetails when pressed UNDO button
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Form data has been cleared')));
+                  },
+                  child: Text(translate('vehicle.UNDO')),
+                ),
+
               ],
             )
           ],
@@ -475,8 +536,6 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 10),
-          _buildUnderlinedField("VEHICLE ID: ${_selectedItem!.vehicleId}"),
           const SizedBox(height: 12),
           _buildUnderlinedField("VEHICLE NAME: ${_selectedItem!.vehicleName}"),
           const SizedBox(height: 12),
@@ -590,7 +649,6 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
     }
   }
 
-  String _currentLanguage = 'en';
   /// Displays an AlertDialog with instructions.
   void _showInstructions() {
     showDialog(
@@ -609,6 +667,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
   }
 
   //Heading section
+  // Question icon for help to use the app
   @override
   Widget build(BuildContext context) {
     return Scaffold(
