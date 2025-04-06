@@ -216,13 +216,16 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
       });
     }
   }
+
   // FORM IMPLEMENTATION SECTION
+
   Widget _listPage() {
     return Column(
       children: [
         Column( // Stack inputs vertically
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+
             TextField(
               controller: _vehicleNameController,
               decoration: InputDecoration(
@@ -239,6 +242,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
             ),
 
             const SizedBox(height: 10), // Space between fields
+
             TextField( // Vehicle Type Input
               controller: _vehicleTypeController,
               decoration: InputDecoration(
@@ -328,6 +332,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
                 floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
               ),
             ),
+// DONE FORM IMPLEMENTATION
 
             // SAVE button
             // Implementation of the SAVE button and COPY PREVIOUS BUTTON SECTION
