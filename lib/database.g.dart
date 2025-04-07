@@ -104,7 +104,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `CustomerItem` (`id` INTEGER NOT NULL, `firstName` TEXT NOT NULL, `lastName` TEXT NOT NULL, `address` TEXT NOT NULL, `birthday` TEXT NOT NULL, PRIMARY KEY (`id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `event_planner_item` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `date` TEXT NOT NULL, `time` TEXT NOT NULL, `location` TEXT NOT NULL, `description` TEXT NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `event_planner_item` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `date` TEXT NOT NULL, `time` TEXT NOT NULL, `venue` TEXT NOT NULL, `description` TEXT NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `ExpenseItem` (`id` INTEGER NOT NULL, `name` TEXT NOT NULL, `category` TEXT NOT NULL, `amount` TEXT NOT NULL, `date` TEXT NOT NULL, `paymentMethod` TEXT NOT NULL, PRIMARY KEY (`id`))');
         await database.execute(
@@ -443,4 +443,3 @@ class _$VehicleDao extends VehicleDao {
     await _vehicleItemDeletionAdapter.delete(item);
   }
 }
-

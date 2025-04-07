@@ -5,7 +5,7 @@ import 'database.dart';
 import 'vehicle_item.dart';
 import 'vehicle_dao.dart';
 
-// New class for editting the Editing vehicle information
+// New class for editing the Editing vehicle information
 class EditVehiclePage extends StatefulWidget {
   final VehicleItem item;
   final VehicleDao dao;
@@ -166,10 +166,6 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
                 borderRadius: BorderRadius.circular(4.0), // Rounded corners
                 borderSide: BorderSide(color: Colors.blue.shade300), // Border color
               ),
-              filled: true,
-              fillColor: Colors.blue.shade50, // Light background color
-              contentPadding: EdgeInsets.all(16.0), // Inner padding
-              floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
             ),
           ),
           //Vehicle Type
@@ -182,10 +178,6 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
                     borderRadius: BorderRadius.circular(4.0), // Rounded corners
                     borderSide: BorderSide(color: Colors.blue.shade300), // Border color
                   ),
-                  filled: true,
-                  fillColor: Colors.blue.shade50, // Light background color
-                  contentPadding: EdgeInsets.all(16.0), // Inner padding
-                  floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
                 ),
               ),
 
@@ -198,10 +190,6 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
                     borderRadius: BorderRadius.circular(4.0), // Rounded corners
                     borderSide: BorderSide(color: Colors.blue.shade300), // Border color
                   ),
-                  filled: true,
-                  fillColor: Colors.blue.shade50, // Light background color
-                  contentPadding: EdgeInsets.all(16.0), // Inner padding
-                  floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
                 ),
               ),
 
@@ -215,10 +203,6 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
                     borderRadius: BorderRadius.circular(4.0), // Rounded corners
                     borderSide: BorderSide(color: Colors.blue.shade300), // Border color
                   ),
-                  filled: true,
-                  fillColor: Colors.blue.shade50, // Light background color
-                  contentPadding: EdgeInsets.all(16.0), // Inner padding
-                  floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
                 ),
               ),
 
@@ -235,11 +219,6 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
                         borderRadius: BorderRadius.circular(4.0),
                         borderSide: BorderSide(color: Colors.blue.shade300),
                       ),
-                      filled: true,
-                      fillColor: Colors.blue.shade50,
-                      contentPadding: EdgeInsets.all(16.0),
-                      floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
-                      suffixIcon: Icon(Icons.calendar_today, color: Colors.blue.shade700),
                     ),
                   ),
                 ),
@@ -255,10 +234,6 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
                     borderRadius: BorderRadius.circular(4.0), // Rounded corners
                     borderSide: BorderSide(color: Colors.blue.shade300), // Border color
                   ),
-                  filled: true,
-                  fillColor: Colors.blue.shade50, // Light background color
-                  contentPadding: EdgeInsets.all(16.0), // Inner padding
-                  floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
                 ),
               ),
 
@@ -272,11 +247,6 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
                     borderRadius: BorderRadius.circular(4.0), // Rounded corners
                     borderSide: BorderSide(color: Colors.blue.shade300), // Border color
                   ),
-
-                  filled: true,
-                  fillColor: Colors.blue.shade50, // Light background color
-                  contentPadding: EdgeInsets.all(16.0), // Inner padding
-                  floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
                 ),
 
               ),
