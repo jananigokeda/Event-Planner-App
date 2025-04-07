@@ -11,9 +11,12 @@ abstract class ExpenseDao {
 
   /// Inserts a new expense item into the database.
   @insert
-  Future<void> insertItem(ExpenseItem itm);
+  Future<void> insertItem(ExpenseItem item);
 
   /// Deletes an expense item from the database.
   @delete
-  Future<void> deleteItem(ExpenseItem itm);
+  Future<void> deleteItem(ExpenseItem item);
+  /// Deletes an expense item from the database.
+  @update
+  Future<void> updateItem(ExpenseItem item);
 }

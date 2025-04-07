@@ -74,9 +74,12 @@ flutter:
     - assets/i18n/ta.json
     - assets/i18n/ko.json
     - assets/i18n/te.json
-  #  - assets/EventPlanner.jpeg
+  #   - assets/EventPlanner.jpeg
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
+    - assets/images/visa.jpg
+    - assets/images/mastercard.jpg
+    - assets/images/debit.jpg
 
 
 

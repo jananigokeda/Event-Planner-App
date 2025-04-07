@@ -2,12 +2,16 @@
 // Model class representing an expense item.
 import 'package:floor/floor.dart';
 
-@entity
+/*@entity
 class ExpenseItem {
-  static int currentId = 1;
+  //static int currentId = 1;*/
+  @Entity(tableName: 'ExpenseItem')
+  class ExpenseItem {
+  @PrimaryKey(autoGenerate: true)
+  final int? id; // Primary key, auto-generated (nullable for insertion).
 
-  @primaryKey
-  final int id; // Primary key, auto-generated.
+ // @primaryKey
+  //final int id; // Primary key, auto-generated.
   final String name; // Name of the expense.
   final String category; //Category of the expense.
   final String amount;
@@ -15,8 +19,8 @@ class ExpenseItem {
   final String paymentMethod;
 
   ExpenseItem(this.id, this.name, this.category, this.amount, this.date, this.paymentMethod) {
-    if (id > currentId) {
+    /*if (id > currentId) {
       currentId = id + 1;
-    }
+    }*/
   }
   }

@@ -49,12 +49,25 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _paymentMethodController = TextEditingController();
 
-  @override
+  /*@override
   void initState() {
     super.initState();
     _loadExpenseList(); // Load saved expenses from secure storage
     _loadPreviousFormData(); // Load last entered form data
-    }
+    }*/
+  @override
+  void initState() {
+    super.initState();
+
+    // Build the Floor database and get the DAO for Expense.
+    $FloorAppDatabase.databaseBuilder('app_database.db').build().then((database) {
+      _database = database;
+      _expenseDao = database.expenseDao;
+      _loadExpenseList();
+    });
+
+    _loadPreviousFormData(); // Load shared preference data
+  }
 
   /// Show Cupertino-style language selection popup
   void showDemoActionSheet(
@@ -102,8 +115,8 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
     );
   }
 
-
-  /*Future<void> _loadExpenseList() async {
+  /// Load expenses from the Database
+  Future<void> _loadExpenseList() async {
     final list = await _expenseDao.getAllItems();
     setState(() {
       _expenses = list;
@@ -111,9 +124,9 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
         _selectedExpense = _expenses[0];
       }
     });
-  }*/
+  }
 
-  /// Load expenses from EncryptedSharedPreferences
+  /*/// Load expenses from EncryptedSharedPreferences
   Future<void> _loadExpenseList() async {
     String? countStr = await _esp.getString(_expenseCountKey);
     int count = countStr != null && countStr.isNotEmpty ? int.tryParse(
@@ -145,10 +158,10 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
         _selectedExpense = _expenses[0];
       }
     });
-  }
+  }*/
 
 
-  /// Save the current list of expenses securely
+  /*/// Saves the current list of expenses to EncryptedSharedPreferences.
   Future<void> _saveExpenseList() async {
     int count = _expenses.length;
     await _esp.setString(_expenseCountKey, count.toString());
@@ -163,7 +176,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
       await _esp.setString("expense_${i}_paymentMethod", expense.paymentMethod);
     }
 
-  }
+  }*/
 
   /// Load last saved form data for convenience
   Future<void> _loadPreviousFormData() async {
@@ -187,7 +200,8 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
   }
 
 
-  /// Handles form validation and new expense creation
+  /// Handles validation and creation of a new expense entry.
+  /// Displays appropriate dialogs or snack bar messages for success and error cases.
   Future<void> _handleSubmit() async {
     // Validate that all fields are filled
     if (_nameController.text.isEmpty ||
@@ -234,7 +248,9 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
       }
     });
 
-    await _saveExpenseList();
+    //await _saveExpenseList();
+    await _expenseDao.insertItem(newExpense);
+    _loadExpenseList();
     // Show confirmation
     ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Expense added.')));
@@ -281,7 +297,9 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
       setState(() {
         _expenses.removeWhere((e) => e.id == expense.id);
       });
-      await _saveExpenseList();
+      //await _saveExpenseList();
+      await _expenseDao.deleteItem(expense);
+      _loadExpenseList();
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Expense deleted.')));
     } else {
@@ -292,7 +310,9 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
           _expenses[index] = updatedExpense;
         }
       });
-      await _saveExpenseList();
+      //await _saveExpenseList();
+      await _expenseDao.updateItem(updatedExpense);
+      _loadExpenseList();
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Expense updated.')));
     }
@@ -314,8 +334,29 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
       icon: const Icon(Icons.language),
       onPressed: () => _onActionsheetPress(context),
     ),
-  ]
+            // New Help/Instructions button
+            IconButton(
+              icon: const Icon(Icons.info_outline),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (_) => AlertDialog(
+                    title: Text(translate('expense.instruction_title')),
+                    content: Text(translate('expense.instruction_content')),
+                    actions: [
+                      TextButton(
+                        child: const Text('OK'),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ],
       ),
+
+
       body: isWideScreen ? _buildWideLayout() : _buildMobileLayout(),
     );
   }
@@ -441,12 +482,59 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
       ),
             const SizedBox(height: 8),
 
+            //updated payment Method
+            DropdownButtonFormField<String>(
+              value: _paymentMethodController.text.isNotEmpty
+                  ? _paymentMethodController.text
+                  : null,
+              decoration: InputDecoration(
+                labelText: translate('expense.Payment Method'),
+                border: const OutlineInputBorder(),
+              ),
+              items: [
+                {
+                  'label': 'Visa',
+                  'image': 'assets/images/visa.jpg',
+                },
+                {
+                  'label': 'MasterCard',
+                  'image': 'assets/images/mastercard.jpg',
+                },
+                {
+                  'label': 'Debit',
+                  'image': 'assets/images/debit.jpg',
+                },
+              ].map((item) {
+                return DropdownMenuItem<String>(
+                  value: item['label'],
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        item['image']!,
+                        width: 24,
+                        height: 24,
+                        fit: BoxFit.contain,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(item['label']!),
+                    ],
+                  ),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  _paymentMethodController.text = value!;
+                });
+              },
+            ),
+
+
             // Payment Method
-            TextField(
+            /*TextField(
               controller: _paymentMethodController,
               decoration: InputDecoration(
                   labelText: translate('expense.Payment Method')),
-            ),
+            ),*/
             /*Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Column(
@@ -457,11 +545,14 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       _buildPaymentOption("Visa", "assets/images/visa.jpg"),
-                      _buildPaymentOption("MasterCard", "assets/images/mastercard.jpg"),
+                      const SizedBox(width: 12),
+                     _buildPaymentOption("MasterCard", "assets/images/mastercard.jpg"),
+                      const SizedBox(width: 12),
                       _buildPaymentOption("Debit", "assets/images/debit.jpg"),
                     ],
                   ),
@@ -518,7 +609,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
      ]),
     ));
   }
-  /*Widget _buildPaymentOption(String label, String assetPath) {
+  Widget _buildPaymentOption(String label, String assetPath) {
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -547,7 +638,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
         ],
       ),
     );
-  }*/
+  }
 
   /// Builds the expense list view (used in wide layout)
   Widget _buildListView() {

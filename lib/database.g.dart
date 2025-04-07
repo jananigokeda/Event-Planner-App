@@ -1,4 +1,3 @@
-
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
 part of 'database.dart';
@@ -82,10 +81,10 @@ class _$AppDatabase extends AppDatabase {
   VehicleDao? _vehicleDaoInstance;
 
   Future<sqflite.Database> open(
-      String path,
-      List<Migration> migrations, [
-        Callback? callback,
-      ]) async {
+    String path,
+    List<Migration> migrations, [
+    Callback? callback,
+  ]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
       version: 1,
       onConfigure: (database) async {
@@ -141,41 +140,41 @@ class _$AppDatabase extends AppDatabase {
 
 class _$CustomerDao extends CustomerDao {
   _$CustomerDao(
-      this.database,
-      this.changeListener,
-      )   : _queryAdapter = QueryAdapter(database),
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database),
         _customerItemInsertionAdapter = InsertionAdapter(
             database,
             'CustomerItem',
-                (CustomerItem item) => <String, Object?>{
-              'id': item.id,
-              'firstName': item.firstName,
-              'lastName': item.lastName,
-              'address': item.address,
-              'birthday': item.birthday
-            }),
+            (CustomerItem item) => <String, Object?>{
+                  'id': item.id,
+                  'firstName': item.firstName,
+                  'lastName': item.lastName,
+                  'address': item.address,
+                  'birthday': item.birthday
+                }),
         _customerItemUpdateAdapter = UpdateAdapter(
             database,
             'CustomerItem',
             ['id'],
-                (CustomerItem item) => <String, Object?>{
-              'id': item.id,
-              'firstName': item.firstName,
-              'lastName': item.lastName,
-              'address': item.address,
-              'birthday': item.birthday
-            }),
+            (CustomerItem item) => <String, Object?>{
+                  'id': item.id,
+                  'firstName': item.firstName,
+                  'lastName': item.lastName,
+                  'address': item.address,
+                  'birthday': item.birthday
+                }),
         _customerItemDeletionAdapter = DeletionAdapter(
             database,
             'CustomerItem',
             ['id'],
-                (CustomerItem item) => <String, Object?>{
-              'id': item.id,
-              'firstName': item.firstName,
-              'lastName': item.lastName,
-              'address': item.address,
-              'birthday': item.birthday
-            });
+            (CustomerItem item) => <String, Object?>{
+                  'id': item.id,
+                  'firstName': item.firstName,
+                  'lastName': item.lastName,
+                  'address': item.address,
+                  'birthday': item.birthday
+                });
 
   final sqflite.DatabaseExecutor database;
 
@@ -218,44 +217,44 @@ class _$CustomerDao extends CustomerDao {
 
 class _$EventPlannerDao extends EventPlannerDao {
   _$EventPlannerDao(
-      this.database,
-      this.changeListener,
-      )   : _queryAdapter = QueryAdapter(database),
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database),
         _eventPlannerItemInsertionAdapter = InsertionAdapter(
             database,
             'event_planner_item',
-                (EventPlannerItem item) => <String, Object?>{
-              'id': item.id,
-              'name': item.name,
-              'date': item.date,
-              'time': item.time,
-              'venue': item.venue,
-              'description': item.description
-            }),
+            (EventPlannerItem item) => <String, Object?>{
+                  'id': item.id,
+                  'name': item.name,
+                  'date': item.date,
+                  'time': item.time,
+                  'venue': item.venue,
+                  'description': item.description
+                }),
         _eventPlannerItemUpdateAdapter = UpdateAdapter(
             database,
             'event_planner_item',
             ['id'],
-                (EventPlannerItem item) => <String, Object?>{
-              'id': item.id,
-              'name': item.name,
-              'date': item.date,
-              'time': item.time,
-              'venue': item.venue,
-              'description': item.description
-            }),
+            (EventPlannerItem item) => <String, Object?>{
+                  'id': item.id,
+                  'name': item.name,
+                  'date': item.date,
+                  'time': item.time,
+                  'venue': item.venue,
+                  'description': item.description
+                }),
         _eventPlannerItemDeletionAdapter = DeletionAdapter(
             database,
             'event_planner_item',
             ['id'],
-                (EventPlannerItem item) => <String, Object?>{
-              'id': item.id,
-              'name': item.name,
-              'date': item.date,
-              'time': item.time,
-              'venue': item.venue,
-              'description': item.description
-            });
+            (EventPlannerItem item) => <String, Object?>{
+                  'id': item.id,
+                  'name': item.name,
+                  'date': item.date,
+                  'time': item.time,
+                  'venue': item.venue,
+                  'description': item.description
+                });
 
   final sqflite.DatabaseExecutor database;
 
@@ -300,32 +299,44 @@ class _$EventPlannerDao extends EventPlannerDao {
 
 class _$ExpenseDao extends ExpenseDao {
   _$ExpenseDao(
-      this.database,
-      this.changeListener,
-      )   : _queryAdapter = QueryAdapter(database),
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database),
         _expenseItemInsertionAdapter = InsertionAdapter(
             database,
             'ExpenseItem',
-                (ExpenseItem item) => <String, Object?>{
-              'id': item.id,
-              'name': item.name,
-              'category': item.category,
-              'amount': item.amount,
-              'date': item.date,
-              'paymentMethod': item.paymentMethod
-            }),
+            (ExpenseItem item) => <String, Object?>{
+                  'id': item.id,
+                  'name': item.name,
+                  'category': item.category,
+                  'amount': item.amount,
+                  'date': item.date,
+                  'paymentMethod': item.paymentMethod
+                }),
+        _expenseItemUpdateAdapter = UpdateAdapter(
+            database,
+            'ExpenseItem',
+            ['id'],
+            (ExpenseItem item) => <String, Object?>{
+                  'id': item.id,
+                  'name': item.name,
+                  'category': item.category,
+                  'amount': item.amount,
+                  'date': item.date,
+                  'paymentMethod': item.paymentMethod
+                }),
         _expenseItemDeletionAdapter = DeletionAdapter(
             database,
             'ExpenseItem',
             ['id'],
-                (ExpenseItem item) => <String, Object?>{
-              'id': item.id,
-              'name': item.name,
-              'category': item.category,
-              'amount': item.amount,
-              'date': item.date,
-              'paymentMethod': item.paymentMethod
-            });
+            (ExpenseItem item) => <String, Object?>{
+                  'id': item.id,
+                  'name': item.name,
+                  'category': item.category,
+                  'amount': item.amount,
+                  'date': item.date,
+                  'paymentMethod': item.paymentMethod
+                });
 
   final sqflite.DatabaseExecutor database;
 
@@ -334,6 +345,8 @@ class _$ExpenseDao extends ExpenseDao {
   final QueryAdapter _queryAdapter;
 
   final InsertionAdapter<ExpenseItem> _expenseItemInsertionAdapter;
+
+  final UpdateAdapter<ExpenseItem> _expenseItemUpdateAdapter;
 
   final DeletionAdapter<ExpenseItem> _expenseItemDeletionAdapter;
 
@@ -350,59 +363,64 @@ class _$ExpenseDao extends ExpenseDao {
   }
 
   @override
-  Future<void> insertItem(ExpenseItem itm) async {
-    await _expenseItemInsertionAdapter.insert(itm, OnConflictStrategy.abort);
+  Future<void> insertItem(ExpenseItem item) async {
+    await _expenseItemInsertionAdapter.insert(item, OnConflictStrategy.abort);
   }
 
   @override
-  Future<void> deleteItem(ExpenseItem itm) async {
-    await _expenseItemDeletionAdapter.delete(itm);
+  Future<void> updateItem(ExpenseItem item) async {
+    await _expenseItemUpdateAdapter.update(item, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> deleteItem(ExpenseItem item) async {
+    await _expenseItemDeletionAdapter.delete(item);
   }
 }
 
 class _$VehicleDao extends VehicleDao {
   _$VehicleDao(
-      this.database,
-      this.changeListener,
-      )   : _queryAdapter = QueryAdapter(database),
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database),
         _vehicleItemInsertionAdapter = InsertionAdapter(
             database,
             'vehicle_item',
-                (VehicleItem item) => <String, Object?>{
-              'vehicleId': item.vehicleId,
-              'vehicleName': item.vehicleName,
-              'vehicleType': item.vehicleType,
-              'serviceType': item.serviceType,
-              'serviceDate': item.serviceDate,
-              'mileage': item.mileage,
-              'cost': item.cost
-            }),
+            (VehicleItem item) => <String, Object?>{
+                  'vehicleId': item.vehicleId,
+                  'vehicleName': item.vehicleName,
+                  'vehicleType': item.vehicleType,
+                  'serviceType': item.serviceType,
+                  'serviceDate': item.serviceDate,
+                  'mileage': item.mileage,
+                  'cost': item.cost
+                }),
         _vehicleItemUpdateAdapter = UpdateAdapter(
             database,
             'vehicle_item',
             ['vehicleId'],
-                (VehicleItem item) => <String, Object?>{
-              'vehicleId': item.vehicleId,
-              'vehicleName': item.vehicleName,
-              'vehicleType': item.vehicleType,
-              'serviceType': item.serviceType,
-              'serviceDate': item.serviceDate,
-              'mileage': item.mileage,
-              'cost': item.cost
-            }),
+            (VehicleItem item) => <String, Object?>{
+                  'vehicleId': item.vehicleId,
+                  'vehicleName': item.vehicleName,
+                  'vehicleType': item.vehicleType,
+                  'serviceType': item.serviceType,
+                  'serviceDate': item.serviceDate,
+                  'mileage': item.mileage,
+                  'cost': item.cost
+                }),
         _vehicleItemDeletionAdapter = DeletionAdapter(
             database,
             'vehicle_item',
             ['vehicleId'],
-                (VehicleItem item) => <String, Object?>{
-              'vehicleId': item.vehicleId,
-              'vehicleName': item.vehicleName,
-              'vehicleType': item.vehicleType,
-              'serviceType': item.serviceType,
-              'serviceDate': item.serviceDate,
-              'mileage': item.mileage,
-              'cost': item.cost
-            });
+            (VehicleItem item) => <String, Object?>{
+                  'vehicleId': item.vehicleId,
+                  'vehicleName': item.vehicleName,
+                  'vehicleType': item.vehicleType,
+                  'serviceType': item.serviceType,
+                  'serviceDate': item.serviceDate,
+                  'mileage': item.mileage,
+                  'cost': item.cost
+                });
 
   final sqflite.DatabaseExecutor database;
 

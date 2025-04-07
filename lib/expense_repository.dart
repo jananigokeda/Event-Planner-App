@@ -35,7 +35,7 @@ class ExpenseRepository {
     };
   }
 
-  /// Placeholder method to support saving a full list of expenses.
+  /*/// Placeholder method to support saving a full list of expenses.
   /// In the future, this can be expanded to persist data to a database or file.
   Future<void> saveExpenseList(List<ExpenseItem> expenses) async {
     // Store the list in a persistent storage (e.g., database or file)
@@ -47,5 +47,5 @@ class ExpenseRepository {
   Future<List<ExpenseItem>> getAllExpenses() async {
     // Retrieve the list of all expenses (from database or file)
     return [];
-  }
+  }*/
 }
