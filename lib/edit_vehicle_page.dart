@@ -9,7 +9,7 @@ import 'vehicle_dao.dart';
 class EditVehiclePage extends StatefulWidget {
   final VehicleItem item;
   final VehicleDao dao;
-  final Function(VehicleItem) onUpdate;
+  final Function(VehicleItem) onUpdate; //declares a callback function that the EditVehiclePage widget will use to notify its parent widget when a vehicle item is updated.
   //constructor
   const EditVehiclePage({
     Key? key,
@@ -142,7 +142,7 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("வாகனத் தகவலைத் திருத்து"),
+        title:  Text(translate('vehicle.Title')),
         actions: [
           IconButton(
             icon: const Icon(Icons.save),
