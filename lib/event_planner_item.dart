@@ -17,6 +17,6 @@ class EventPlannerItem {
     required this.date,
     required this.time,
     required this.venue,
-    required this.description,
+    required this.description
   });
 }

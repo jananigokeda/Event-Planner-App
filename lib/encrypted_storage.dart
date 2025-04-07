@@ -8,13 +8,12 @@ Future<void> saveLastEvent(EventPlannerItem event) async {
   await _encryptedPrefs.setString('name', event.name);
   await _encryptedPrefs.setString('date', event.date);
   await _encryptedPrefs.setString('time', event.time);
-  await _encryptedPrefs.setString('location', event.venue);
+  await _encryptedPrefs.setString('venue', event.venue);
   await _encryptedPrefs.setString('description', event.description);
 }
-
 /// Retrieve the most recent event fields from EncryptedSharedPreferences.
 Future<Map<String, String>> getLastEventData() async {
-  final keys = ['name', 'date', 'time', 'location', 'description'];
+  final keys = ['name', 'date', 'time', 'venue', 'description'];
   Map<String, String> eventData = {};
 
   for (final key in keys) {
