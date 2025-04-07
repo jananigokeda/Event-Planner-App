@@ -1,5 +1,6 @@
 import 'package:floor/floor.dart';
 
+
 @Entity(tableName: 'vehicle_item')
 class VehicleItem {
   @PrimaryKey(autoGenerate: true)

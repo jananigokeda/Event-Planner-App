@@ -636,7 +636,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("V E H I C L E - M A I N T E N A N C E - P A G E"),
+        title: Text(translate('vehicle.MainTitle')),
         centerTitle: true,
         actions: [
           SizedBox(width: 16),
