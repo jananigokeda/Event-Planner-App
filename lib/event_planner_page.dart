@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../database.dart';
 import 'event_planner_item.dart';
 import 'encrypted_storage.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 
 class EventPlannerPage extends StatefulWidget {
   const EventPlannerPage({Key? key}) : super(key: key);
@@ -37,7 +39,49 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
       _loadEvents();
     });
   }
-  ////
+
+  void showDemoActionSheet(
+      {required BuildContext context, required Widget child}) {
+    showCupertinoModalPopup<String>(
+        context: context,
+        builder: (BuildContext context) => child).then((String? value) {
+      if (value != null) changeLocale(context, value);
+    });
+  }
+  /// Called when language icon is pressed
+  void _onActionsheetPress(BuildContext context) {
+    showDemoActionSheet(
+      context: context,
+      child: CupertinoActionSheet(
+        title: Text(translate('language.selection.title')),
+        message: Text(translate('language.selection.message')),
+        actions: <Widget>[
+          // English
+          CupertinoActionSheetAction(
+            child: Text(translate('language.name.en')),
+            onPressed: () async {
+              Navigator.pop(context);
+              await changeLocale(context, 'en');
+            },
+          ),
+          // Telugu
+          CupertinoActionSheetAction(
+            child: Text(translate('language.name.te')),
+            onPressed: () async {
+              Navigator.pop(context);
+              await changeLocale(context, 'te');
+            },
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          child: Text(translate('event.Close')),
+          isDefaultAction: true,
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+    );
+  }
+
 
   void _clearFields() {
     _name.clear();
@@ -115,7 +159,7 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Event Planner"),
+        title: Text(translate('event.Event Planner')),
         actions: [
           IconButton(
             icon: const Icon(Icons.info_outline),
@@ -123,16 +167,23 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
               showDialog(
                 context: context,
                 builder: (_) => AlertDialog(
-                  title: const Text("How to Use"),
-                  content: const Text(
+                  title: Text(translate("event.HowToUseTitle")),
+                content: Text(translate(
                     "Create and manage events using this planner. Add new events on the left, view their details on the right."
                         "You can also save all events for reporting.",
                   ),
-                  actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("OK"))],
+                  //actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("OK"))],
                 ),
+              ),
               );
             },
-          )
+          ),
+          IconButton(
+            icon: const Icon(Icons.language),
+            tooltip: "Change Language",
+            onPressed: () => _onActionsheetPress(context),
+          ),
+
         ],
       ),
       body: Padding(
@@ -148,46 +199,52 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
                     key: _formKey,
                     child: Column(
                       children: [
-                        _buildInput(_name, "Event Name"),
-                        _buildInput(_date, "Date (YYYY-MM-DD)"),
-                        _buildInput(_time, "Time (HH:MM)"),
-                        _buildInput(_venue, "Venue"),
-                        _buildInput(_description, "Description"),
-                        Row(
-                          children: [
-                            ElevatedButton(
-                              onPressed: _submitEvent,
-                              child: Text(_selectedId == null ? "Create Event" : "Save Changes"),
-                            ),
-                            const SizedBox(width: 10),
-                            ElevatedButton.icon(
-                              onPressed: _copyPrevious,
-                              icon: const Icon(Icons.copy),
-                              label: const Text('Copy Last Event'),
-                             ),
-                            const SizedBox(width: 10),
-                            OutlinedButton(
-                              onPressed: _clearFields,
-                              child: const Text("Clear Form"),
-                            ),
-                            const SizedBox(width: 10),
-                            if (_selectedId != null)
+                        _buildInput(_name, translate('event.Event Name')),
+                        _buildInput(_date, translate('event.Date')),
+                        _buildInput(_time, translate('event.Time')),
+                        _buildInput(_venue, translate('event.Venue')),
+                        _buildInput(_description, translate('event.Description')),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
                               ElevatedButton(
-                                onPressed: () => _deleteEvent(
-                                  EventPlannerItem(
-                                    id: _selectedId,
-                                    name: _name.text,
-                                    date: _date.text,
-                                    time: _time.text,
-                                    venue: _venue.text,
-                                    description: _description.text,
-                                  ),
-                                ),
-                                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                                child: const Text("Delete Event"),
+                                onPressed: _submitEvent,
+                                child: Text(_selectedId == null
+                                    ? translate('event.Create Event')
+                                    : translate('event.Save Changes')),
                               ),
-                          ],
+                              const SizedBox(width: 10),
+                              ElevatedButton.icon(
+                                onPressed: _copyPrevious,
+                                icon: const Icon(Icons.copy),
+                                label: Text(translate('event.Copy Last Event')),
+                              ),
+                              const SizedBox(width: 10),
+                              OutlinedButton(
+                                onPressed: _clearFields,
+                                child: Text(translate('event.Clear Form')),
+                              ),
+                              const SizedBox(width: 10),
+                              if (_selectedId != null)
+                                ElevatedButton(
+                                  onPressed: () => _deleteEvent(
+                                    EventPlannerItem(
+                                      id: _selectedId,
+                                      name: _name.text,
+                                      date: _date.text,
+                                      time: _time.text,
+                                      venue: _venue.text,
+                                      description: _description.text,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                  child: Text(translate('event.Delete Event')),
+                                ),
+                            ],
+                          ),
                         ),
+
                       ],
                     ),
                   ),
@@ -228,14 +285,14 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
             Expanded(
               flex: 1,
               child: _selectedId == null
-                  ? const Center(child: Text("Select an event to view details."))
+                  ? Center(child: Text(translate('event.No Event Selected')))
                   : Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade300)),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text("Event Details", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    Text(translate('event.Event Detail'), style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 10),
                     Text("Name: ${_name.text}"),
                     Text("Date: ${_date.text}"),

@@ -73,6 +73,7 @@ flutter:
     - assets/i18n/en.json
     - assets/i18n/ta.json
     - assets/i18n/ko.json
+    - assets/i18n/te.json
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

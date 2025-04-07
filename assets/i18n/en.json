@@ -8,7 +8,8 @@
     "name": {
       "en": "English",
       "ta": "Tamil",
-      "ko": "Korean"
+      "ko": "Korean",
+      "te": "Telugu"
     }
   },
   "button": {
@@ -84,5 +85,26 @@
     "No items": "There are no items in the list",
     "No item selected":"There is no item selected for detail",
     "UNDO": "UNDO"
+  },
+  "event": {
+    "Event Planner": "Event Planner",
+    "Event Detail": "Event Details",
+    "Event Name": "Event Name",
+    "Date": "Date",
+    "Time": "Time",
+    "Venue": "Venue",
+    "Description": "Description",
+    "Create Event": "Create Event",
+    "Save Changes": "Save Changes",
+    "Copy Last Event": "Copy Last Event",
+    "Clear Form": "Clear Form",
+    "Delete Event": "Delete Event",
+    "No Events": "No Events",
+    "No Event Selected": "No Event Selected",
+    "All fields are required": "All fields are required",
+    "Previous data loaded": "Previous data loaded",
+    "Instructions_content":
+    "Create and manage events using the Event Planner.\n\nFill out the form on the right and click the 'Create Event' button to add an event.\nIf you modify the details, use 'Save Changes' to update them.\nTo reuse the last added event, click 'Copy Last Event'.\nTo delete the selected event, use 'Delete Event'.\nView and select events in the list on the left.\nDetails of the selected event will appear in the right panel."
   }
+
 }
