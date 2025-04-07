@@ -270,10 +270,6 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
                   borderRadius: BorderRadius.circular(4.0), // Rounded corners
                   borderSide: BorderSide(color: Colors.blue.shade300), // Border color
                 ),
-                filled: true,
-                fillColor: Colors.blue.shade50, // Light background color
-                contentPadding: EdgeInsets.all(16.0), // Inner padding
-                floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
               ),
             ),
 
@@ -287,10 +283,6 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
                   borderRadius: BorderRadius.circular(4.0), // Rounded corners
                   borderSide: BorderSide(color: Colors.blue.shade300), // Border color
                 ),
-                filled: true,
-                fillColor: Colors.blue.shade50, // Light background color
-                contentPadding: EdgeInsets.all(16.0), // Inner padding
-                floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
               ),
             ),
 
@@ -304,10 +296,6 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
                   borderRadius: BorderRadius.circular(4.0), // Rounded corners
                   borderSide: BorderSide(color: Colors.blue.shade300), // Border color
                 ),
-                filled: true,
-                fillColor: Colors.blue.shade50, // Light background color
-                contentPadding: EdgeInsets.all(16.0), // Inner padding
-                floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
               ),
             ),
 
@@ -324,11 +312,6 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
                       borderRadius: BorderRadius.circular(4.0),
                       borderSide: BorderSide(color: Colors.blue.shade300),
                     ),
-                    filled: true,
-                    fillColor: Colors.blue.shade50,
-                    contentPadding: EdgeInsets.all(16.0),
-                    floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
-                    suffixIcon: Icon(Icons.calendar_today, color: Colors.blue.shade700),
                   ),
                 ),
               ),
@@ -344,10 +327,6 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
                   borderRadius: BorderRadius.circular(4.0), // Rounded corners
                   borderSide: BorderSide(color: Colors.blue.shade300), // Border color
                 ),
-                filled: true,
-                fillColor: Colors.blue.shade50, // Light background color
-                contentPadding: EdgeInsets.all(16.0), // Inner padding
-                floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
               ),
             ),
 
@@ -361,11 +340,6 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
                   borderRadius: BorderRadius.circular(4.0), // Rounded corners
                   borderSide: BorderSide(color: Colors.blue.shade300), // Border color
                 ),
-
-                filled: true,
-                fillColor: Colors.blue.shade50, // Light background color
-                contentPadding: EdgeInsets.all(16.0), // Inner padding
-                floatingLabelStyle: TextStyle(color: Colors.blue.shade700),
               ),
             ),
 // DONE FORM IMPLEMENTATION
@@ -440,7 +414,12 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
                     ),
                   ),
                   onPressed: () async {
-                    _closeDetails(); // calling the _closeDetails when pressed UNDO button
+                    _vehicleNameController.clear();
+                    _vehicleTypeController.clear();
+                    _serviceTypeController.clear();
+                    _serviceDateController.clear();
+                    _mileageController.clear();
+                    _costController.clear();
                     ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Form data has been cleared')));
                   },
@@ -494,26 +473,6 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
     );
   }
 
-  //Helper method for consistent underlined fields
-  Widget _buildUnderlinedField(String text) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          text,
-          style: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Container(
-          height: 1,
-          color: Colors.black,
-        ),
-      ],
-    );
-  }
   //DETAIL PAGE
   // This detail page will show on the right side of the screen
   // If the there is noi selection, it will say the There is no item selected for detail
@@ -542,17 +501,17 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 12),
-          _buildUnderlinedField("VEHICLE NAME: ${_selectedItem!.vehicleName}"),
+          Text("VEHICLE NAME: ${_selectedItem!.vehicleName}"),
           const SizedBox(height: 12),
-          _buildUnderlinedField("VEHICLE TYPE: ${_selectedItem!.vehicleType}"),
+          Text("VEHICLE TYPE: ${_selectedItem!.vehicleType}"),
           const SizedBox(height: 12),
-          _buildUnderlinedField("SERVICE TYPE: ${_selectedItem!.serviceType}"),
+          Text("SERVICE TYPE: ${_selectedItem!.serviceType}"),
           const SizedBox(height: 12),
-          _buildUnderlinedField("SERVICE DATE: ${_selectedItem!.serviceDate}"),
+          Text("SERVICE DATE: ${_selectedItem!.serviceDate}"),
           const SizedBox(height: 12),
-          _buildUnderlinedField("MILEAGE: ${_selectedItem!.mileage}"),
+          Text("MILEAGE: ${_selectedItem!.mileage}"),
           const SizedBox(height: 12),
-          _buildUnderlinedField("COST: ${_selectedItem!.cost}"),
+          Text("COST: ${_selectedItem!.cost}"),
           const SizedBox(height: 40),
 
           // Add the Row as another child of the Column
@@ -677,8 +636,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("V E H I C L E - M A I N T E N A N C E - P A G E  |  வாகன பராமரிப்பு பக்கம்"),
-        backgroundColor: Colors.lightBlueAccent[200],
+        title: const Text("V E H I C L E - M A I N T E N A N C E - P A G E"),
         centerTitle: true,
         actions: [
           SizedBox(width: 16),

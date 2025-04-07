@@ -1,7 +1,7 @@
 import 'package:cst2335_final/vehicle_item.dart';
 import 'package:floor/floor.dart';
 
-// This calss is responsible for all the database operations.
+// This class is responsible for all the database operations.
 @dao
 abstract class VehicleDao {
   @Query("SELECT * FROM vehicle_item")
