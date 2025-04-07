@@ -1,101 +1,142 @@
+import 'package:cst2335_final/event_planner_dao.dart';
 import 'package:flutter/material.dart';
 import '../database.dart';
 import 'event_planner_item.dart';
 import 'encrypted_storage.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_translate/flutter_translate.dart';
 
 class EventPlannerPage extends StatefulWidget {
-  final AppDatabase database;
-  const EventPlannerPage({super.key, required this.database});
+  const EventPlannerPage({Key? key}) : super(key: key);
+  // final AppDatabase database;
 
   @override
   State<EventPlannerPage> createState() => _EventPlannerPageState();
 }
-
+/// Controllers for form fields
 class _EventPlannerPageState extends State<EventPlannerPage> {
+
   final _formKey = GlobalKey<FormState>();
-
-  final _name = TextEditingController();
-  final _date = TextEditingController();
-  final _time = TextEditingController();
-  final _location = TextEditingController();
-  final _description = TextEditingController();
-
+  final TextEditingController _eventNameController = TextEditingController();
+  final TextEditingController _eventDateController = TextEditingController();
+  final TextEditingController _eventTimeController = TextEditingController();
+  final TextEditingController _eventvenueController = TextEditingController();
+  final TextEditingController _eventDescriptionController = TextEditingController();
   int? _selectedId;
-  late final _dao = widget.database.eventPlannerDao;
+  late EventPlannerDao myDAO;
+  late AppDatabase _database;
   List<EventPlannerItem> _events = [];
 
   @override
   void initState() {
     super.initState();
-    _loadEvents();
+    /// Initialize the Floor database and DAO
+    $FloorAppDatabase.databaseBuilder('app_database.db').build().then((database) {
+      _database = database;
+      myDAO = database.eventPlannerDao;
+      _loadEvents();
+    });
+  }
+  void showDemoActionSheet(
+      {required BuildContext context, required Widget child}) {
+    showCupertinoModalPopup<String>(
+        context: context,
+        builder: (BuildContext context) => child).then((String? value) {
+      if (value != null) changeLocale(context, value);
+    });
+  }
+  /// Called when language icon is pressed
+  void _onActionsheetPress(BuildContext context) {
+    showDemoActionSheet(
+      context: context,
+      child: CupertinoActionSheet(
+        title: Text(translate('language.selection.title')),
+        message: Text(translate('language.selection.message')),
+        actions: <Widget>[
+          // English
+          CupertinoActionSheetAction(
+            child: Text(translate('language.name.en')),
+            onPressed: () async {
+              Navigator.pop(context);
+              await changeLocale(context, 'en');
+            },
+          ),
+          /// Telugu
+          CupertinoActionSheetAction(
+            child: Text(translate('language.name.te')),
+            onPressed: () async {
+              Navigator.pop(context);
+              await changeLocale(context, 'te');
+            },
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          child: Text(translate('event.Close')),
+          isDefaultAction: true,
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+    );
   }
 
+  /// Clear all form fields
   void _clearFields() {
-    _name.clear();
-    _date.clear();
-    _time.clear();
-    _location.clear();
-    _description.clear();
+    _eventNameController.clear();
+    _eventDateController.clear();
+    _eventTimeController.clear();
+    _eventvenueController.clear();
+    _eventDescriptionController.clear();
     _selectedId = null;
   }
-
+/// Load events from the database
   Future<void> _loadEvents() async {
-    final items = await _dao.getAllItems();
+    final items = await myDAO.getAllItems();
     setState(() {
       _events = items;
     });
   }
-
+/// Submit new or updated event to the database
   Future<void> _submitEvent() async {
     if (_formKey.currentState!.validate()) {
       final newEvent = EventPlannerItem(
         id: _selectedId,
-        name: _name.text.trim(),
-        date: _date.text.trim(),
-        time: _time.text.trim(),
-        location: _location.text.trim(),
-        description: _description.text.trim(),
+        name: _eventNameController.text.trim(),
+        date: _eventDateController.text.trim(),
+        time: _eventTimeController.text.trim(),
+        venue: _eventvenueController.text.trim(),
+        description: _eventDescriptionController.text.trim(),
       );
 
       if (_selectedId == null) {
-        await _dao.insertItem(newEvent);
+        await myDAO.insertItem(newEvent);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Event added.")));
       } else {
-        await _dao.updateItem(newEvent);
+        await myDAO.updateItem(newEvent);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Event updated.")));
       }
-
+/// Save the last entered event
       await saveLastEvent(newEvent);
       _clearFields();
       await _loadEvents();
     }
   }
-
-  void _selectEvent(EventPlannerItem e) {
-    _selectedId = e.id;
-    _name.text = e.name;
-    _date.text = e.date;
-    _time.text = e.time;
-    _location.text = e.location;
-    _description.text = e.description;
-  }
-
+/// Delete selected event with confirmation dialog
   Future<void> _deleteEvent(EventPlannerItem e) async {
-    await _dao.deleteItem(e);
+    await myDAO.deleteItem(e);
     _clearFields();
     await _loadEvents();
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Event deleted.")));
   }
-
+  /// Copy last saved event using EncryptedSharedPreferences
   Future<void> _copyPrevious() async {
     final saved = await getLastEventData();
-    _name.text = saved['name'] ?? '';
-    _date.text = saved['date'] ?? '';
-    _time.text = saved['time'] ?? '';
-    _location.text = saved['location'] ?? '';
-    _description.text = saved['description'] ?? '';
+    _eventNameController.text = saved['name'] ?? '';
+    _eventDateController.text = saved['date'] ?? '';
+    _eventTimeController.text = saved['time'] ?? '';
+    _eventvenueController.text = saved['venue'] ?? '';
+    _eventDescriptionController.text = saved['description'] ?? '';
   }
-
+/// Reusable input field builder
   Widget _buildInput(TextEditingController controller, String label, {TextInputType? type}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
@@ -111,12 +152,11 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Event Planner"),
+        title: Text(translate('event.Event Planner')),
         actions: [
           IconButton(
             icon: const Icon(Icons.info_outline),
@@ -124,88 +164,207 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
               showDialog(
                 context: context,
                 builder: (_) => AlertDialog(
-                  title: const Text("How to Use"),
-                  content: const Text(
-                    "Fill out the fields below to add an event.\n\n"
-                        "Tap an event to edit it.\n"
-                        "Long-press to delete.\n"
-                        "Tap the copy icon to reuse the last added event.",
-                  ),
-                  actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("OK"))],
+                  title: Text(translate("event.HowToUseTitle")),
+
+                content: Text(translate( "event.instructions_content")),
+                    actions: [
+                    TextButton(
+                    onPressed: () => Navigator.pop(context),
+                  child: const Text("OK"),
+                  )
+                  ] ,
+                //actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("OK"))],
                 ),
+
               );
             },
-          )
+          ),
+          IconButton(
+            icon: const Icon(Icons.language),
+            tooltip: "Change Language",
+            onPressed: () => _onActionsheetPress(context),
+          ),
+
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _copyPrevious,
-        tooltip: "Copy Last Event",
-        child: const Icon(Icons.copy),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
+      body: Stack(
           children: [
-            Form(
-              key: _formKey,
+      /// Background image layer
+   //   Container(
+    //  decoration: BoxDecoration(
+    //  image: DecorationImage(
+     //     image: AssetImage("images/EventPlanner.jpeg"),
+   //   fit: BoxFit.cover,
+   // ),
+   // ),
+   // ),
+    /// Main content over background
+    Padding(
+    padding: const EdgeInsets.all(12.0),
+    child: Row(
+    children: [
+            /// Left side - Form and event list
+            Expanded(
+              flex: 1,
               child: Column(
                 children: [
-                  _buildInput(_name, "Event Name"),
-                  _buildInput(_date, "Date (YYYY-MM-DD)"),
-                  _buildInput(_time, "Time (HH:MM)"),
-                  _buildInput(_location, "Location"),
-                  _buildInput(_description, "Description"),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      ElevatedButton(
-                        onPressed: _submitEvent,
-                        child: Text(_selectedId == null ? "Add Event" : "Update Event"),
-                      ),
-                      const SizedBox(width: 10),
-                      if (_selectedId != null)
-                        ElevatedButton(
-                          onPressed: () => _deleteEvent(
-                            EventPlannerItem(
-                              id: _selectedId,
-                              name: _name.text,
-                              date: _date.text,
-                              time: _time.text,
-                              location: _location.text,
-                              description: _description.text,
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        _buildInput(_eventNameController, translate('event.Event Name')),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 6),
+                          child: TextFormField(
+                            controller: _eventDateController,
+                            readOnly: true,
+                            onTap: () async {
+                              final picked = await showDatePicker(
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime(2000),
+                                lastDate: DateTime(2100),
+                              );
+                              if (picked != null) {
+                                _eventDateController.text = picked.toIso8601String().split('T')[0]; // Formats as YYYY-MM-DD
+                              }
+                            },
+                            decoration: InputDecoration(
+                              labelText: translate('event.Date'),
+                              border: OutlineInputBorder(),
                             ),
+                            validator: (val) => val == null || val.trim().isEmpty ? "Enter Date" : null,
                           ),
-                          child: const Text("Delete"),
-                          style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                         ),
-                    ],
+
+                        _buildInput(_eventTimeController, translate('event.Time')),
+                        _buildInput(_eventvenueController, translate('event.venue')),
+                        _buildInput(_eventDescriptionController, translate('event.Description')),
+                        Wrap(
+                          spacing: 10,
+                          runSpacing: 8,
+                          children: [
+                            ElevatedButton(
+                              onPressed: _submitEvent,
+                              child: Text(_selectedId == null
+                                  ? translate('event.Create Event')
+                                  : translate('event.Save Changes')),
+                            ),
+                            ElevatedButton.icon(
+                              onPressed: _copyPrevious,
+                              icon: const Icon(Icons.copy),
+                              label: Text(translate('event.Copy Last Event')),
+                            ),
+                            OutlinedButton(
+                              onPressed: _clearFields,
+                              child: Text(translate('event.Clear Form')),
+                            ),
+                            if (_selectedId != null)
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (_) => AlertDialog(
+                                      title: Text("Confirm Deletion"),
+                                      content: Text("Are you sure you want to delete this event?"),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(context),
+                                          child: const Text("Cancel"),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            _deleteEvent(
+                                              EventPlannerItem(
+                                                id: _selectedId,
+                                                name: _eventNameController.text,
+                                                date: _eventDateController.text,
+                                                time: _eventTimeController.text,
+                                                venue: _eventvenueController.text,
+                                                description: _eventDescriptionController.text,
+                                              ),
+                                            );
+                                          },
+                                          child: const Text("Delete"),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                                child: Text(translate('event.Delete Event')),
+                              ),
+
+                          ],
+                        ),
+
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Divider(),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: _events.length,
+                      itemBuilder: (_, index) {
+                        final e = _events[index];
+                        return Card(
+                          child: ListTile(
+                            title: Text(e.name),
+                            subtitle: Text("\u{1F4C5} ${e.date} at ${e.time}\n\u{1F4CD} ${e.venue}"),
+                            onTap: () {
+                              setState(() {
+                                _selectedId = e.id;
+                                _eventNameController.text = e.name;
+                                _eventDateController.text = e.date;
+                                _eventTimeController.text = e.time;
+                                _eventvenueController.text = e.venue;
+                                _eventDescriptionController.text = e.description;
+                              });
+                            },
+                            tileColor: _selectedId == e.id ? Colors.blue[50] : null,
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+
+            const SizedBox(width: 16),
+
+            ///  Right side - selected event details
             Expanded(
-              child: _events.isEmpty
-                  ? const Center(child: Text("No events available."))
-                  : ListView.builder(
-                itemCount: _events.length,
-                itemBuilder: (_, index) {
-                  final e = _events[index];
-                  return Card(
-                    child: ListTile(
-                      title: Text(e.name),
-                      subtitle: Text("${e.date} at ${e.time}\n📍 ${e.location}"),
-                      onTap: () => _selectEvent(e),
-                      onLongPress: () => _deleteEvent(e),
-                    ),
-                  );
-                },
+              flex: 1,
+              child: _selectedId == null
+                  ? Center(child: Text(translate('event.No Event Selected')))
+                  : Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade300)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(translate('event.Event Detail'), style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 10),
+                    Text("${translate('event.Event Name')}: ${_eventNameController.text}"),
+                    Text("${translate('event.Date')}: ${_eventDateController.text}"),
+                    Text("${translate('event.Time')}: ${_eventTimeController.text}"),
+                    Text("${translate('event.Venue')}: ${_eventvenueController.text}"),
+                    Text("${translate('event.Description')}: ${_eventDescriptionController.text}"),
+                    Text("Database ID: $_selectedId"),
+                    const SizedBox(height: 20),
+
+                  ],
+                ),
               ),
-            )
+            ),
           ],
         ),
       ),
+    ]
+    ),
     );
   }
 }

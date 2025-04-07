@@ -8,7 +8,8 @@
     "name": {
       "en": "English",
       "ta": "Tamil",
-      "ko": "Korean"
+      "ko": "Korean",
+      "te": "Telugu"
     }
   },
   "button": {
@@ -61,5 +62,50 @@
     "Update": "Update",
     "Previous data loaded": "previous data loaded"
 
+  },
+
+  "vehicle": {
+    "Instructions_content":
+    "Enter all required fields to add a vehicle information.\n Copy Previous to load the last input data.\n Click save button save the vehicle information \n Click on a vehicle info to view details on the page.\nOn tablet/desktop, the right pane shows the detail view.",
+    "Vehicle Name": "Vehicle Name",
+    "Vehicle Type": "Vehicle Type",
+    "Service Type": "Service Type",
+    "Service Date": "Service Date",
+    "Mileage": "Mileage",
+    "Cost": "Cost",
+    "SAVE": "SAVE",
+    "COPY PREVIOUS": "COPY PREVIOUS",
+    "Edit": "Edit",
+    "Delete": "Delete",
+    "Close": "Close",
+    "Delete Item": "Delete Item",
+    "Yes": "Yes",
+    "No": "No",
+    "Areyousure": "Are you sure you want to delete this item?",
+    "No items": "There are no items in the list",
+    "No item selected":"There is no item selected for detail",
+    "UNDO": "UNDO",
+    "Title": "Edit Vehicle Information",
+    "MainTitle": "V E H I C L E - M A I N T E N A N C E - P A G E"
+  },
+  "event": {
+    "Event Planner": "Event Planner",
+    "Event Detail": "Event Details",
+    "Event Name": "Event Name",
+    "Date": "Date",
+    "Time": "Time",
+    "venue": "venue",
+    "Description": "Description",
+    "Create Event": "Create Event",
+    "Save Changes": "Save Changes",
+    "Copy Last Event": "Copy Last Event",
+    "Clear Form": "Clear Form",
+    "Delete Event": "Delete Event",
+    "No Events": "No Events",
+    "No Event Selected": "No Event Selected",
+    "All fields are required": "All fields are required",
+    "Previous data loaded": "Previous data loaded",
+    "instructions_content":
+    "Create and manage events using the Event Planner.\n\nFill out the form on the right and click the 'Create Event' button to add an event.\nIf you modify the details, use 'Save Changes' to update them.\nTo reuse the last added event, click 'Copy Last Event'.\nTo delete the selected event, use 'Delete Event'.\nView and select events in the list on the left.\nDetails of the selected event will appear in the right panel."
   }
 }
