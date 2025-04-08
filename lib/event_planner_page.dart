@@ -5,10 +5,23 @@ import 'event_planner_item.dart';
 import 'encrypted_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_translate/flutter_translate.dart';
-
+/// The event planner allows users to create, view, update, and delete events. Each event includes
+/// a name, date, time, venue, and description.
+/// Features:
+/// Main Features:
+/// - Form to enter and edit event details
+/// - ListView that shows all saved events from a local Floor database
+/// - Tapping an event fills the form with its details
+/// - Buttons to create, update, delete, or clear the form
+/// - Option to copy the last event using EncryptedSharedPreferences
+/// - Confirmation dialog before deleting an event
+/// - Snackbar messages for actions like saving or deleting
+/// - “How to Use” instructions shown in an AlertDialog
+/// - Supports multiple languages using flutter_translat
+/// - Works well on both phones and tablets with a responsive layout
+/// - Stores events locally using Floor (SQLite), even after the app is closed
 class EventPlannerPage extends StatefulWidget {
   const EventPlannerPage({Key? key}) : super(key: key);
-  // final AppDatabase database;
 
   @override
   State<EventPlannerPage> createState() => _EventPlannerPageState();
@@ -25,6 +38,7 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
   int? _selectedId;
   late EventPlannerDao myDAO;
   late AppDatabase _database;
+  final _encryptedStorage = EventEncryptedStorage();
   List<EventPlannerItem> _events = [];
 
   @override
@@ -115,7 +129,7 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Event updated.")));
       }
 /// Save the last entered event
-      await saveLastEvent(newEvent);
+      await _encryptedStorage.saveEvent(newEvent);
       _clearFields();
       await _loadEvents();
     }
@@ -129,7 +143,7 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
   }
   /// Copy last saved event using EncryptedSharedPreferences
   Future<void> _copyPrevious() async {
-    final saved = await getLastEventData();
+    final saved = await _encryptedStorage.loadEvent();
     _eventNameController.text = saved['name'] ?? '';
     _eventDateController.text = saved['date'] ?? '';
     _eventTimeController.text = saved['time'] ?? '';
@@ -164,7 +178,7 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
               showDialog(
                 context: context,
                 builder: (_) => AlertDialog(
-                  title: Text(translate("event.HowToUseTitle")),
+                  title: Text(translate("How to create Event")),
 
                 content: Text(translate( "event.instructions_content")),
                     actions: [
@@ -266,7 +280,7 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
                                   showDialog(
                                     context: context,
                                     builder: (_) => AlertDialog(
-                                      title: Text("Confirm Deletion"),
+                                      title: Text("Delete Event"),
                                       content: Text("Are you sure you want to delete this event?"),
                                       actions: [
                                         TextButton(
@@ -351,7 +365,7 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
                     Text("${translate('event.Event Name')}: ${_eventNameController.text}"),
                     Text("${translate('event.Date')}: ${_eventDateController.text}"),
                     Text("${translate('event.Time')}: ${_eventTimeController.text}"),
-                    Text("${translate('event.Venue')}: ${_eventvenueController.text}"),
+                    Text("${translate('event.venue')}: ${_eventvenueController.text}"),
                     Text("${translate('event.Description')}: ${_eventDescriptionController.text}"),
                     Text("Database ID: $_selectedId"),
                     const SizedBox(height: 20),
