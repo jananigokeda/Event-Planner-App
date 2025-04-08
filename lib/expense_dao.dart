@@ -16,6 +16,7 @@ abstract class ExpenseDao {
   /// Deletes an expense item from the database.
   @delete
   Future<void> deleteItem(ExpenseItem item);
+
   /// Deletes an expense item from the database.
   @update
   Future<void> updateItem(ExpenseItem item);
