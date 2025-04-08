@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
             title: 'Flutter Demo',
             localizationsDelegates: [
-              GlobalMaterialLocalizations.delegate,
+              ...GlobalMaterialLocalizations.delegates,
               GlobalWidgetsLocalizations.delegate,
               localizationDelegate
             ],
