@@ -38,6 +38,7 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
   int? _selectedId;
   late EventPlannerDao myDAO;
   late AppDatabase _database;
+  final _encryptedStorage = EventEncryptedStorage();
   List<EventPlannerItem> _events = [];
 
   @override
@@ -128,7 +129,7 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Event updated.")));
       }
 /// Save the last entered event
-      await saveLastEvent(newEvent);
+      await _encryptedStorage.saveEvent(newEvent); // <-- ✅ FIXED METHOD CALL
       _clearFields();
       await _loadEvents();
     }
@@ -142,7 +143,7 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
   }
   /// Copy last saved event using EncryptedSharedPreferences
   Future<void> _copyPrevious() async {
-    final saved = await getLastEventData();
+    final saved = await _encryptedStorage.loadEvent();
     _eventNameController.text = saved['name'] ?? '';
     _eventDateController.text = saved['date'] ?? '';
     _eventTimeController.text = saved['time'] ?? '';
