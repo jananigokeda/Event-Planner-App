@@ -46,7 +46,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
   /// Show Cupertino-style language selection popup
   void showDemoActionSheet(
       {required BuildContext context, required Widget child}) {
-     showCupertinoModalPopup<String>(
+    showCupertinoModalPopup<String>(
         context: context,
         builder: (BuildContext context) => child).then((String? value) {
       if (value != null) changeLocale(context, value);
@@ -89,7 +89,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
     );
   }
 
-  // This method will use the getAllItems method to load the data from the database.
+  /// This method will use the getAllItems method to load the data from the database.
   Future<void> _loadItems() async {
     final items = await myDAO.getAllItems();
     setState(() {
@@ -98,12 +98,12 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
     });
   }
 
-  // This method is responsible for loading the data back from the EncryptedSharedPreferences
+  /// This method is responsible for loading the data back from the EncryptedSharedPreferences
   void loadData() async {
-    // Calling EncryptedSharedPreferences build in class and creating documents
+    /// Calling EncryptedSharedPreferences build in class and creating documents
     EncryptedSharedPreferences prefs = EncryptedSharedPreferences();
 
-    //Retrieving the form details using getString method
+    ///Retrieving the form details using getString method
     final savedVehicleName =  await prefs.getString('Vehicle Name');
     final savedVehicleType = await prefs.getString('Vehicle Type');
     final savedServiceType = await prefs.getString('Service Type');
@@ -112,24 +112,24 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
     final savedCost = await prefs.getString('Cost');
 
     setState(() {
-    if (savedVehicleName != null && savedVehicleType != null && savedServiceType != null
-        && savedServiceDate != null && savedMileage != null && savedCost!=null) {
+      if (savedVehicleName != null && savedVehicleType != null && savedServiceType != null
+          && savedServiceDate != null && savedMileage != null && savedCost!=null) {
 
-      _vehicleNameController.text = savedVehicleName;
-      _vehicleTypeController.text = savedVehicleType;
-      _serviceTypeController.text = savedServiceType;
-      _serviceDateController.text = savedServiceDate;
-      _mileageController.text = savedMileage;
-      _costController.text = savedCost;
-     }
+        _vehicleNameController.text = savedVehicleName;
+        _vehicleTypeController.text = savedVehicleType;
+        _serviceTypeController.text = savedServiceType;
+        _serviceDateController.text = savedServiceDate;
+        _mileageController.text = savedMileage;
+        _costController.text = savedCost;
+      }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Latest Vehicle Information has been loaded!!.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Latest Vehicle Information has been loaded!!.')));
     });
 
   }
-  // This function is responsible for adding the vehicle information to the database.
-  // it will collect all the information in  newItem object and use myDAO.insertItem(newItem) to add to the database
+  /// This function is responsible for adding the vehicle information to the database.
+  /// it will collect all the information in  newItem object and use myDAO.insertItem(newItem) to add to the database
   Future<void> _addItem() async {
     String vehicleName = _vehicleNameController.text.trim();
     String vehicleType = _vehicleTypeController.text.trim();
@@ -141,7 +141,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
       final newItem = VehicleItem(vehicleName: vehicleName, vehicleType: vehicleType, serviceType: serviceType, serviceDate: serviceDate, mileage: mileage, cost: cost);
       await myDAO.insertItem(newItem);
 
-      // Saving the vehicle data using EncryptedSharedPreferences
+      /// Saving the vehicle data using EncryptedSharedPreferences
       final prefs = EncryptedSharedPreferences();
       await prefs.setString('Vehicle Name', _vehicleNameController.text);
       await prefs.setString('Vehicle Type', _vehicleTypeController.text);
@@ -176,8 +176,8 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
     }
   }
 
-  // Deleting the item from the list
-  // This will use the deleteItem() function to delete the selected item
+  /// Deleting the item from the list
+  /// This will use the deleteItem() function to delete the selected item
   Future<void> _removeItem(int index) async {
     showDialog(
       context: context,
@@ -205,7 +205,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
   }
 
 
-  // show vehicle detail from the database
+  /// show vehicle detail from the database
   void _showDetails(VehicleItem item) {
     setState(() {
       _selectedItem = item;
@@ -254,201 +254,188 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
   }
 
   // FORM IMPLEMENTATION SECTION
-
   Widget _listPage() {
     return Column(
       children: [
-        Column( // Stack inputs vertically
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
+        Expanded(
+          flex: 7,
+          child: ListView(  //ListView
+            padding: const EdgeInsets.all(8.0),
+            children: [
 
-            TextField(
-              controller: _vehicleNameController,
-              decoration: InputDecoration(
-                labelText: translate('vehicle.Vehicle Name'),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(4.0), // Rounded corners
-                  borderSide: BorderSide(color: Colors.blue.shade300), // Border color
+              ///Vehicle Name
+              TextField(  //TextField
+                controller: _vehicleNameController,
+                decoration: InputDecoration(
+                  labelText: translate('vehicle.Vehicle Name'),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4.0),
+                    borderSide: BorderSide(color: Colors.blue.shade300),
+                  ),
                 ),
               ),
-            ),
 
-            const SizedBox(height: 10), // Space between fields
-
-            TextField( // Vehicle Type Input
-              controller: _vehicleTypeController,
-              decoration: InputDecoration(
-                labelText: translate('vehicle.Vehicle Type'),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(4.0), // Rounded corners
-                  borderSide: BorderSide(color: Colors.blue.shade300), // Border color
+              const SizedBox(height: 10),
+              //Vehicle Type
+              TextField(
+                controller: _vehicleTypeController,
+                decoration: InputDecoration(
+                  labelText: translate('vehicle.Vehicle Type'),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4.0),
+                    borderSide: BorderSide(color: Colors.blue.shade300),
+                  ),
                 ),
               ),
-            ),
 
-            //serviceType
-            const SizedBox(height: 10), // Space between fields
-            TextField( // Service Type Input
-              controller: _serviceTypeController,
-              decoration: InputDecoration(
-                labelText: translate('vehicle.Service Type'),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(4.0), // Rounded corners
-                  borderSide: BorderSide(color: Colors.blue.shade300), // Border color
+              const SizedBox(height: 10),
+              //Service Type
+              TextField(
+                controller: _serviceTypeController,
+                decoration: InputDecoration(
+                  labelText: translate('vehicle.Service Type'),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4.0),
+                    borderSide: BorderSide(color: Colors.blue.shade300),
+                  ),
                 ),
               ),
-            ),
 
-            // Service Date
-            const SizedBox(height: 10),
-            GestureDetector(
-              onTap: () => _selectDate(context),
-              child: AbsorbPointer(
-                child: TextField(
-                  controller: _serviceDateController,
-                  decoration: InputDecoration(
-                    labelText: translate('vehicle.Service Date'),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(4.0),
-                      borderSide: BorderSide(color: Colors.blue.shade300),
+              const SizedBox(height: 10),
+             //Service Date
+              GestureDetector(
+                onTap: () => _selectDate(context),
+                child: AbsorbPointer(
+                  child: TextField(
+                    controller: _serviceDateController,
+                    decoration: InputDecoration(
+                      labelText: translate('vehicle.Service Date'),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(4.0),
+                        borderSide: BorderSide(color: Colors.blue.shade300),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
 
-            //mileage
-            const SizedBox(height: 10), // Space between fields
-            TextField( // Mileage Input
-              controller: _mileageController,
-              decoration:  InputDecoration(
-                labelText: translate('vehicle.Mileage'),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(4.0), // Rounded corners
-                  borderSide: BorderSide(color: Colors.blue.shade300), // Border color
+              const SizedBox(height: 10),
+              //Mileage
+              TextField(
+                controller: _mileageController,
+                decoration: InputDecoration(
+                  labelText: translate('vehicle.Mileage'),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4.0),
+                    borderSide: BorderSide(color: Colors.blue.shade300),
+                  ),
                 ),
               ),
-            ),
 
-            //Cost
-            const SizedBox(height: 10), // Space between fields
-            TextField( // Cost Input
-              controller: _costController,
-              decoration:  InputDecoration(
-                labelText: translate('vehicle.Cost'),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(4.0), // Rounded corners
-                  borderSide: BorderSide(color: Colors.blue.shade300), // Border color
+              const SizedBox(height: 10),
+              //Cost
+              TextField(
+                controller: _costController,
+                decoration: InputDecoration(
+                  labelText: translate('vehicle.Cost'),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4.0),
+                    borderSide: BorderSide(color: Colors.blue.shade300),
+                  ),
                 ),
               ),
-            ),
-// DONE FORM IMPLEMENTATION
 
-            // SAVE button
-            // Implementation of the SAVE button and COPY PREVIOUS BUTTON SECTION
-            // Once the save button is clicked, it will call the _addItem function
-            // _addItem will then access the insertItem function to insert the information
-            const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
+              const SizedBox(height: 10),
+
+              // SAVE button
+              /// Implementation of the SAVE button and COPY PREVIOUS BUTTON SECTION
+              /// Once the save button is clicked, it will call the _addItem function
+              /// _addItem will then access the insertItem function to insert the information
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
                     onPressed: () async {
-                      await _addItem(); // This method will add the vehicle info when save button is pressed
+                      await _addItem();
                     },
-                    style: ElevatedButton.styleFrom(  // Styling the button
+                    style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: Colors.lightBlueAccent,
                       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),
-                      elevation: 5,
-                      textStyle: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                    ),
+                    child: Text(translate('vehicle.SAVE')),
+                  ),
+
+                  const SizedBox(width: 10),
+                  /// Copy Previous button which will call the loadData function to load the previous data back.
+                  ElevatedButton(
+                    onPressed: () async {
+                      loadData(); // Loading the previous data whe the copy previous button presssed
+                    },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.lightBlueAccent,
+                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
                       ),
                     ),
-                    child: Text(translate('vehicle.SAVE'))
-
-                ),
-
-                // Copy Previous button which will call the loadData function to load the previous data back.
-                const SizedBox(width: 20),
-                ElevatedButton(
-
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.lightBlueAccent,
-                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    elevation: 5,
-                    textStyle: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    child: Text(translate('vehicle.COPY PREVIOUS')),
                   ),
-                  onPressed: () async {
-                    loadData(); // Loading the previous data whe the copy previous button presssed
-                  },
-                  child: Text(translate('vehicle.COPY PREVIOUS')),
-                ),
 
-                // UNDO button which will call the _closeDetails function to clear the form
-                const SizedBox(width: 20),
-                ElevatedButton(
+                  const SizedBox(width: 10),
 
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Colors.lightBlueAccent,
-                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
+                  // UNDO button which will clear the form
+                  ElevatedButton(
+                    onPressed: () {
+                      _vehicleNameController.clear();
+                      _vehicleTypeController.clear();
+                      _serviceTypeController.clear();
+                      _serviceDateController.clear();
+                      _mileageController.clear();
+                      _costController.clear();
+                      //SnackBar
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Form data has been cleared')),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.lightBlueAccent,
+                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
                     ),
-                    elevation: 5,
-                    textStyle: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    child: Text(translate('vehicle.UNDO')),
                   ),
-                  onPressed: () async {
-                    _vehicleNameController.clear();
-                    _vehicleTypeController.clear();
-                    _serviceTypeController.clear();
-                    _serviceDateController.clear();
-                    _mileageController.clear();
-                    _costController.clear();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Form data has been cleared')));
-                  },
-                  child: Text(translate('vehicle.UNDO')),
-                ),
-
-              ],
-            )
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
 
-        // This is the bottom part of the form which display the information from the database by calling the _showDetails
-        // If the database is empty, it will dispaly, There are no items in the list
-        //Wrap each ListTile with Container
-        const SizedBox(height: 25),
-        const Divider( // Add the Divider widget
-            color: Colors.grey, // Color of the line
-            thickness: 1.0), // Thickness of the line
+        const SizedBox(height: 10),
+
+        const Divider(
+          color: Colors.grey,
+          thickness: 1.0,
+        ),
+        // The following will check if the database has any data. If there is any, it will display the data
         Expanded(
+          flex: 3,
           child: _items.isEmpty
-              ? Center(child: Text("There are no items in the list."))
+              ? const Center(child: Text("There are no items in the list."))
               : ListView.builder(
             itemCount: _items.length,
             itemBuilder: (context, index) {
-
-              return Container( // Wrap each ListTile with Container
-                margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0), // Add margin for spacing between blocks
-                decoration: BoxDecoration( // Add background, border, and rounded corners
-                  color: Colors.white, // Background color for the block
+              return Container(
+                margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
                 ),
                 child: GestureDetector(
                   onTap: () {
@@ -457,18 +444,14 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
                   child: ListTile(
                     title: Center(
                       child: Text(
-                          "${index + 1}: ${_items[index].vehicleName} - vehicleType: ${_items[index].vehicleType} -serviceType: ${_items[index].serviceType} -serviceDate: ${_items[index].serviceDate } -mileage: ${_items[index].mileage } -cost: ${_items[index].cost }"
-                      ),
+                          "${index + 1}: ${_items[index].vehicleName} - vehicleType: ${_items[index].vehicleType} - serviceType: ${_items[index].serviceType} - serviceDate: ${_items[index].serviceDate} - mileage: ${_items[index].mileage} - cost: ${_items[index].cost}"),
                     ),
                   ),
                 ),
               );
-
             },
           ),
         ),
-
-
       ],
     );
   }
@@ -528,7 +511,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
                 },
                 icon: const Icon(Icons.delete, color: Colors.white),
                 label: Text(
-                    (translate('vehicle.Delete')), // Localized text
+                  (translate('vehicle.Delete')), // Localized text
                   style: const TextStyle(color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -558,7 +541,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
                 },
                 icon: const Icon(Icons.edit, color: Colors.white),
                 label: Text(
-                    translate('vehicle.Edit'),  // Localized text
+                  translate('vehicle.Edit'),  // Localized text
                   style: const TextStyle(color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
@@ -570,7 +553,7 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
                 onPressed: _closeDetails,
                 icon: const Icon(Icons.close, color: Colors.white),
                 label: Text(
-                   (translate('vehicle.Close')), // Localized text
+                  (translate('vehicle.Close')), // Localized text
                   style: const TextStyle(color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
@@ -636,19 +619,19 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(translate('vehicle.MainTitle')),
-        centerTitle: true,
-        actions: [
-          SizedBox(width: 16),
-          IconButton(
-            icon: const Icon(Icons.question_mark),
-            onPressed: _showInstructions,
-          ),
-      IconButton(
-          icon: const Icon(Icons.language),
-          onPressed: () => _onActionsheetPress(context),
-         ),
-      ]
+          title: Text(translate('vehicle.MainTitle')),
+          centerTitle: true,
+          actions: [
+            SizedBox(width: 16),
+            IconButton(
+              icon: const Icon(Icons.question_mark),
+              onPressed: _showInstructions,
+            ),
+            IconButton(
+              icon: const Icon(Icons.language),
+              onPressed: () => _onActionsheetPress(context),
+            ),
+          ]
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -658,4 +641,3 @@ class _VehicleMaintenancePageState extends State<VehicleMaintenancePage> {
   }
 
 }
-

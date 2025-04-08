@@ -5,7 +5,7 @@ import 'database.dart';
 import 'vehicle_item.dart';
 import 'vehicle_dao.dart';
 
-// New class for editing the Editing vehicle information
+/// New class for editing the Editing vehicle information
 class EditVehiclePage extends StatefulWidget {
   final VehicleItem item;
   final VehicleDao dao;
@@ -21,7 +21,7 @@ class EditVehiclePage extends StatefulWidget {
   @override
   _EditVehiclePageState createState() => _EditVehiclePageState();
 }
-// Declaring variables
+/// Declaring variables
 class _EditVehiclePageState extends State<EditVehiclePage> {
   late TextEditingController _vehicleNameController;
   late TextEditingController _vehicleTypeController;
@@ -30,7 +30,7 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
   late TextEditingController _mileageController;
   late TextEditingController _costController;
 
-  //This initState() method is initializing several TextEditingController instances in a Flutter widget
+  ///This initState() method is initializing several TextEditingController instances in a Flutter widget
   @override
   void initState() {
     super.initState();
@@ -88,7 +88,7 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
     );
   }
 
-  //This dispose() method is cleaning up resources when the Flutter widget is removed from the widget tree. Here's what it does:
+  ///This dispose() method is cleaning up resources when the Flutter widget is removed from the widget tree. Here's what it does:
   @override
   void dispose() {
     _vehicleNameController.dispose();
@@ -100,10 +100,10 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
     super.dispose();
   }
 
-  //_updateItem() creates an updated VehicleItem with the edited values
-  // Uses the DAO to update the database
-  // Calls the onUpdate callback
-  // Navigates back to previous screen
+  ///_updateItem() creates an updated VehicleItem with the edited values
+  /// Uses the DAO to update the database
+  /// Calls the onUpdate callback
+  /// Navigates back to previous screen
   Future<void> _updateItem() async {
     final updatedItem = VehicleItem(
       vehicleId: widget.item.vehicleId,
@@ -122,7 +122,7 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
         const SnackBar(content: Text('Vehicle Information has been successfully updated!!.')));
   }
 
-  // Picking the date when trying to update the date
+  /// Picking the date when trying to update the date
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -137,7 +137,7 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
       });
     }
   }
-  // Adding heading for the updater page
+  /// Adding heading for the updater page
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -151,8 +151,8 @@ class _EditVehiclePageState extends State<EditVehiclePage> {
         ],
       ),
 
-      // Implementation of the edit page form
-      // Vehicle Name
+      /// Implementation of the edit page form
+      /// Vehicle Name
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
