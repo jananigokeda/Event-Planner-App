@@ -34,7 +34,6 @@ class ExpenseRepository {
       "paymentMethod": await _storage.getString(lastExpensePaymentMethodKey) ?? '',
     };
   }
-
   /*/// Placeholder method to support saving a full list of expenses.
   /// In the future, this can be expanded to persist data to a database or file.
   Future<void> saveExpenseList(List<ExpenseItem> expenses) async {
