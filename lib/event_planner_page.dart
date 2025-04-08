@@ -129,7 +129,7 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Event updated.")));
       }
 /// Save the last entered event
-      await _encryptedStorage.saveEvent(newEvent); // <-- ✅ FIXED METHOD CALL
+      await _encryptedStorage.saveEvent(newEvent);
       _clearFields();
       await _loadEvents();
     }
@@ -365,7 +365,7 @@ class _EventPlannerPageState extends State<EventPlannerPage> {
                     Text("${translate('event.Event Name')}: ${_eventNameController.text}"),
                     Text("${translate('event.Date')}: ${_eventDateController.text}"),
                     Text("${translate('event.Time')}: ${_eventTimeController.text}"),
-                    Text("${translate('event.Venue')}: ${_eventvenueController.text}"),
+                    Text("${translate('event.venue')}: ${_eventvenueController.text}"),
                     Text("${translate('event.Description')}: ${_eventDescriptionController.text}"),
                     Text("Database ID: $_selectedId"),
                     const SizedBox(height: 20),
