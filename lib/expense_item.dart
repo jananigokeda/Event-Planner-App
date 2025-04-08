@@ -9,7 +9,6 @@ class ExpenseItem {
   class ExpenseItem {
   @PrimaryKey(autoGenerate: true)
   final int? id; // Primary key, auto-generated (nullable for insertion).
-
  // @primaryKey
   //final int id; // Primary key, auto-generated.
   final String name; // Name of the expense.
