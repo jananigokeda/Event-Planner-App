@@ -417,7 +417,6 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
     );
   }
 
-
   /// Input form for entering expense details
    Widget _buildInputForm() {
     return Card(
