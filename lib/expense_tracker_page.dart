@@ -482,7 +482,7 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
             const SizedBox(height: 8),
 
             //updated payment Method
-            DropdownButtonFormField<String>(
+            /*DropdownButtonFormField<String>(
               value: _paymentMethodController.text.isNotEmpty
                   ? _paymentMethodController.text
                   : null,
@@ -525,15 +525,15 @@ class _ExpenseTrackerPageState extends State<ExpenseTrackerPage> {
                   _paymentMethodController.text = value!;
                 });
               },
-            ),
+            ),*/
 
 
             // Payment Method
-            /*TextField(
+            TextField(
               controller: _paymentMethodController,
               decoration: InputDecoration(
                   labelText: translate('expense.Payment Method')),
-            ),*/
+            ),
             /*Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Column(
