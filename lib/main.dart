@@ -26,6 +26,7 @@ class MyApp extends StatelessWidget {
     return LocalizationProvider(
         state: LocalizationProvider.of(context).state,
         child: MaterialApp(
+            debugShowCheckedModeBanner: false,
             title: 'Flutter Demo',
             localizationsDelegates: [
               ...GlobalMaterialLocalizations.delegates,
